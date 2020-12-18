@@ -1,5 +1,6 @@
 from time import perf_counter
 import os
+import platform
 
 import pygame
 from pygame.locals import *
@@ -59,7 +60,8 @@ class Window:
         ######
         #Stuff for embedding
         os.environ['SDL_WINDOWID'] = str(self.embed.winfo_id())
-        os.environ['SDL_VIDEODRIVER'] = 'windib'
+        if platform.system() == 'Windows':
+            os.environ['SDL_VIDEODRIVER'] = 'windib'
 
         self.field.create()#Creates the field visualization
         self.running = True
