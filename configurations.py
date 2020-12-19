@@ -3,6 +3,7 @@ from scipy.interpolate import interp1d
 import numpy as np
 
 def add_carrot(carrot_places):
+	dim = 30
 	prob = prob_density(carrot_places)
 	while True:
 		p = np.random.rand()
