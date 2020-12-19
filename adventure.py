@@ -85,9 +85,19 @@ class Actions:
 		rabbit_vision = []
 		for i in range(-self.manh_distance, self.manh_distance + 1):
 			for j in range(-self.manh_distance, self.manh_distance + 1):
-				if np.abs(i) + np.abs(j) > self.manh_distance: continue
-				rabbit_vision.append((self.rabbit_place[0] + i, self.rabbit_place[1] + j))
+				if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside
+											 # Manhattan space
+				x_vision = self.rabbit_place[0] + i
+				y_vision = self.rabbit_place[1] + j
+				# Boundary conditions
+				if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
+				rabbit_vision.append((x_vision, y_vision))
 		return rabbit_vision
+	
+	def is_outside_boundaries(self, coord):
+		""" Check if the coordinate is outside the boundaries of the grid """
+		if coord < 0 or coord > self.dim: return True
+		else: return False
 
 	def wolf_vision(self):
 		""" Wolf's's space of vision """
