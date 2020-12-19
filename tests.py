@@ -4,7 +4,12 @@ import random
 
 def test_path():
     random.seed(0)
-    carrot_places = [(random.randint(0, 29), random.randint(0, 29)) for i in range(5)]
+    dim = 30
+    energy = 10
+    mean_distance = 0.7
+    ncarrot = int((dim / (mean_distance * energy)) ** 2)
+    carrot_places = [(random.randint(0, dim - 1), random.randint(0, dim - 1)) for i in range(ncarrot)]
+    for i in range(10):
     vilkas_place = (random.randint(0, 29), random.randint(0, 29))
     sample_path = [[(0,0), [vilkas_place], carrot_places]]
     for i in range(1, 20):
