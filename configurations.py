@@ -47,7 +47,7 @@ def generate_carrots_fromdensity(dims, dist):
 
 def generate_carrots_fromuniform(dims, dist):
 	"""Generates carrots from uniform distribution in a field"""
-	n_carrots = int(dims[0]*dims[1]/(math.pi*dist))
+	n_carrots = int(dims[0]*dims[1]/(math.pi*dist**2))
 	carrots = []
 	for i in range(n_carrots):
 		next_carrot = (random.randint(0, dims[0]-1), random.randint(0, dims[1]-1))
