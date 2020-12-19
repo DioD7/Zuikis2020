@@ -19,12 +19,12 @@ from entities import Zuikis, Vilkas, Morka
 ##
 
 class Window:
-    def __init__(self,path = None, fielddim = (30, 30), squaredim = 25, guilen = 250):
+    def __init__(self, path = None, dim = (30, 30), squaredim = 25, guilen = 250):
         self.path = path
         self.root = tk.Tk() #Main window
         # self.root.iconbitmap('pics/zuikis_con.ico') #Window icon of cool Zuikis. Seems to be slowing launch of the window a lot. Somehow.
         self.root.title('Zuikis adventures') #Name of the window
-        self.field = FieldState(field=fielddim, square=squaredim) #Field visualization object init.
+        self.field = FieldState(field=dim, square=squaredim, nwolves=len(path[0][1]), ncarrots=len(path[0][2])) #Field visualization object init.
         self.field_dims = self.field.get_size()
         self.height, self.width = self.field_dims[0], self.field_dims[1] + guilen #Window dims based on the field dims.
         ws = self.root.winfo_screenwidth()  # width of the screen
@@ -72,8 +72,6 @@ class Window:
             self.root.destroy()
 
         self.root.protocol("WM_DELETE_WINDOW", on_close)
-        if self.path is not None:
-            self.field.set_state(path[10])
         self.run()#Init main loop
 
     def run(self):
