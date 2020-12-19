@@ -28,17 +28,17 @@ class Actions:
 			if self.rabbit_place == wolf_place:
 				self.energy -= self.init_energy * 3 / 4
 				self.move_rabbit(cells=4)
-				path = [self.rabbit_place, self.wolf_places, self.carrot_places]
-				return self.energy, path
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
+				return path
 
 		for i, carrot_place in enumerate(self.carrot_places):
 			if self.rabbit_place == carrot_place:
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
-				path = [self.rabbit_place, self.wolf_places, self.carrot_places]
-				return self.energy, path
-		return
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
+				return path
+		return (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
 		
 	def add_carrot(self):
 		""" Add a new carrot from the uniform distribution """
