@@ -98,7 +98,30 @@ class Actions:
 		""" Check if the coordinate is outside the boundaries of the grid """
 		if coord < 0 or coord > self.dim: return True
 		else: return False
+		
+	def wolf_vision(self, wolf_place, wolf_dir):
+		""" Wolf's space of vision """
 
-	def wolf_vision(self):
-		""" Wolf's's space of vision """
-		pass
+		intervals = {
+					 (-1, 1): [(-4, 2), (-2, 4)],
+					 (0, 1): [(-4, 4), (0, 4)],
+					 (1, 1): [(-2, 4), (-2, 4)],
+					 (1, 0): [(0, 4), (-4, 4)],
+					 (1, -1): [(-2, 4), (-4, 2)],
+					 (0, -1): [(-4, 0), (-4, 4)],
+					 (-1, -1): [(-4, 2), (-4, 2)],
+					 (-1, 0): [(-4, 0), (-4, 4)]
+		}
+		manh_boundaries = intervals[self.move[wolf_dir]]
+
+		wolf_vision = []
+		for i in range(-self.manh_distance, self.manh_distance + 1):
+			for j in range(-self.manh_distance, self.manh_distance + 1):
+				if i >= manh_boundaries[0][0] and i <= manh_boundaries[0][1] and \
+				   j >= manh_boundaries[1][0] and j <= manh_boundaries[1][1]:
+					if np.abs(i) + np.abs(j) > self.manh_distance: continue
+					x_vision = wolf_place[0] + i
+					y_vision = wolf_place[1] + j
+					if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
+					wolf_vision.append((self.rabbit_place[0] + i, self.rabbit_place[1] + j))
+		return wolf_vision
