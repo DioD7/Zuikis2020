@@ -23,12 +23,13 @@ class Actions:
 
 	def interactions(self):
 		""" Interactions when agents are in the same cell """
-		a = self.rabbit_vision()
-		for i, wolf_place in enumerate(self.wolf_places):
+		for i in range(len(self.wolf_places)):
+			self.move_wolf(i)
+			wolf_place = self.wolf_places[i]
 			if self.rabbit_place == wolf_place:
 				self.energy -= self.init_energy * 3 / 4
 				self.move_rabbit(cells=4)
-				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
 				return path
 
 		for i, carrot_place in enumerate(self.carrot_places):
@@ -36,9 +37,9 @@ class Actions:
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
-				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
 				return path
-		return (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy)
+		return (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
 		
 	def add_carrot(self):
 		""" Add a new carrot from the uniform distribution """
@@ -78,7 +79,53 @@ class Actions:
 
 	def move_wolf(self, index):
 		""" Move wolf """
-		pass
+		wolf_place = self.wolf_places[index]
+		wolf_dir = self.wolf_dirs[index]
+		wolf_vision = self.wolf_vision(wolf_place, wolf_dir)
+		for i, vision in enumerate(wolf_vision):
+			if self.rabbit_place == vision:  # If rabbit is seen by wolf
+				x_diff = abs(self.rabbit_place[0] - wolf_place[0])
+				y_diff = abs(self.rabbit_place[1] - wolf_place[1])
+				# If the rabbit can be caught by making a single move
+				if (x_diff in [0, 2] and y_diff in [0, 2]) and \
+				   ((x_diff, y_diff) != (0, 0)):
+					self.wolf_places[index] = self.rabbit_place
+					for m in self.move.items():
+						if m[1] == (x_diff / 2, y_diff / 2):
+							self.wolf_dirs[index] = m[0]
+				else:  # If rabbit cannot be caught directly, move as closely as possible
+					best_distance = self.dim
+					new_position = wolf_place
+					for i in range(-2, 3, 2):
+						for j in range(-2, 3, 2):
+							trial_wolf_place = (wolf_place[0] + i, wolf_place[1] + j)
+							if trial_wolf_place in wolf_vision:
+								distance = math.sqrt((trial_wolf_place[0] - self.rabbit_place[0]) ** 2 + \
+													 (trial_wolf_place[1] - self.rabbit_place[1]) ** 2)
+								if distance < best_distance:
+									best_distance = distance
+									new_position = trial_wolf_place
+					self.wolf_places[index] = new_position
+					x_diff = abs(self.rabbit_place[0] - new_position[0])
+					y_diff = abs(self.rabbit_place[1] - new_position[1])
+					for m in self.move.items():
+						if m[1] == (x_diff / 2, y_diff / 2):
+							self.wolf_dirs[index] = m[0]
+				return
+			else:  # If rabbit not to be seen
+				trial_wolf_dir_x = self.move[self.wolf_dirs[index]][0]
+				trial_wolf_dir_y = self.move[self.wolf_dirs[index]][1]
+				trial_wolf_place = self.wolf_places[index] + self.move[self.wolf_dirs[index]]
+				if self.is_outside_boundaries(trial_wolf_place[0]):  # If x coordinate is outside the boundary
+					trial_wolf_dir_x = -self.move[wolf_dir][0]                 # Change direction of vector projection in x axis
+				if self.is_outside_boundaries(trial_wolf_place[1]):
+					trial_wolf_dir_y = -self.move[wolf_dir][1]
+				trial_wolf_dir = (trial_wolf_dir_x, trial_wolf_dir_y)
+				for m in self.move.items():
+					if m[1] == trial_wolf_dir:
+						self.wolf_dirs[index] = m[0]
+				self.wolf_places[index] = (self.wolf_places[index][0] + self.move[self.wolf_dirs[index]][0],
+					                       self.wolf_places[index][1] + self.move[self.wolf_dirs[index]][1])
 	
 	def rabbit_vision(self):
 		""" Rabbit's space of vision """
@@ -93,11 +140,6 @@ class Actions:
 				if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
 				rabbit_vision.append((x_vision, y_vision))
 		return rabbit_vision
-	
-	def is_outside_boundaries(self, coord):
-		""" Check if the coordinate is outside the boundaries of the grid """
-		if coord < 0 or coord > self.dim: return True
-		else: return False
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
 		""" Wolf's space of vision """
@@ -123,5 +165,10 @@ class Actions:
 					x_vision = wolf_place[0] + i
 					y_vision = wolf_place[1] + j
 					if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
-					wolf_vision.append((self.rabbit_place[0] + i, self.rabbit_place[1] + j))
+					wolf_vision.append((x_vision, y_vision))
 		return wolf_vision
+
+	def is_outside_boundaries(self, coord, lower=0, upper=30):
+		""" Check if the coordinate is outside the boundaries of the grid """
+		if coord < lower or coord > upper: return True
+		else: return False
