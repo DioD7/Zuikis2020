@@ -23,6 +23,22 @@ class Actions:
 
 	def interactions(self):
 		""" Interactions when agents are in the same cell """
+		##Directions around an entity encoded by double compass letters and a number, starting from NW: 1
+		#1 2 3
+		#8 * 4
+		#7 6 5
+		# Directions may be also encoded as coordinates, with an entity as the origin of the coordinate system
+		# E.g. the coordinates of cell 1 are (-1, 1), cell 2 - (0, 1), etc.
+		self.move = {
+				1: (-1, 1),
+				2: (0, 1),
+				3: (1, 1),
+				4: (1, 0),
+				5: (1, -1),
+				6: (0, -1),
+				7: (-1, -1),
+				8: (-1, 0)
+		}
 		for i in range(len(self.wolf_places)):
 			self.move_wolf(i)
 			wolf_place = self.wolf_places[i]
@@ -83,7 +99,7 @@ class Actions:
 		wolf_dir = self.wolf_dirs[index]
 		wolf_vision = self.wolf_vision(wolf_place, wolf_dir)
 		for i, vision in enumerate(wolf_vision):
-			if self.rabbit_place == vision:  # If rabbit is seen by wolf
+			if self.rabbit_place == vision:  # If rabbit is seen by the wolf
 				x_diff = abs(self.rabbit_place[0] - wolf_place[0])
 				y_diff = abs(self.rabbit_place[1] - wolf_place[1])
 				# If the rabbit can be caught by making a single move
@@ -100,24 +116,27 @@ class Actions:
 						for j in range(-2, 3, 2):
 							trial_wolf_place = (wolf_place[0] + i, wolf_place[1] + j)
 							if trial_wolf_place in wolf_vision:
+								# The shortest path to the rabbit is based on the Euclidean distance
 								distance = math.sqrt((trial_wolf_place[0] - self.rabbit_place[0]) ** 2 + \
 													 (trial_wolf_place[1] - self.rabbit_place[1]) ** 2)
 								if distance < best_distance:
 									best_distance = distance
 									new_position = trial_wolf_place
+									
 					self.wolf_places[index] = new_position
 					x_diff = abs(self.rabbit_place[0] - new_position[0])
 					y_diff = abs(self.rabbit_place[1] - new_position[1])
 					for m in self.move.items():
+						# Change direction of the wolf to move towards the rabbit
 						if m[1] == (x_diff / 2, y_diff / 2):
 							self.wolf_dirs[index] = m[0]
 				return
-			else:  # If rabbit not to be seen
+			else:  # If rabbit is not to be seen
 				trial_wolf_dir_x = self.move[self.wolf_dirs[index]][0]
 				trial_wolf_dir_y = self.move[self.wolf_dirs[index]][1]
 				trial_wolf_place = self.wolf_places[index] + self.move[self.wolf_dirs[index]]
 				if self.is_outside_boundaries(trial_wolf_place[0]):  # If x coordinate is outside the boundary
-					trial_wolf_dir_x = -self.move[wolf_dir][0]                 # Change direction of vector projection in x axis
+					trial_wolf_dir_x = -self.move[wolf_dir][0]       # Change direction of vector projection in x axis
 				if self.is_outside_boundaries(trial_wolf_place[1]):
 					trial_wolf_dir_y = -self.move[wolf_dir][1]
 				trial_wolf_dir = (trial_wolf_dir_x, trial_wolf_dir_y)
@@ -132,8 +151,8 @@ class Actions:
 		rabbit_vision = []
 		for i in range(-self.manh_distance, self.manh_distance + 1):
 			for j in range(-self.manh_distance, self.manh_distance + 1):
-				if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside
-											 # Manhattan space
+				if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside the
+											                             # Manhattan space
 				x_vision = self.rabbit_place[0] + i
 				y_vision = self.rabbit_place[1] + j
 				# Boundary conditions
@@ -143,7 +162,9 @@ class Actions:
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
 		""" Wolf's space of vision """
-
+		# Directions described as the coordinates from the origin as dictionary keys; dictionary values are limits
+		# for the coordinates, based on the shape of the Manhattan space;
+		# limits are formatted as [(x_min, x_max), (y_min, y_max)]
 		intervals = {
 					 (-1, 1): [(-4, 2), (-2, 4)],
 					 (0, 1): [(-4, 4), (0, 4)],
