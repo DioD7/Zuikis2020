@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import configurations
+import random
 
 ####
 #Mechanics of the zuikis adventure.
@@ -8,13 +9,14 @@ import configurations
 
 class Actions:
 
-	def __init__(self, configuration, dim, carrot_energy, manh_distance=4):
+	def __init__(self, configuration, dim, carrot_energy, wolf_dirs, manh_distance=4):
 		self.rabbit_place, self.wolf_places, self.carrot_places = configuration
 		self.init_energy = dim ** 2
 		self.dim = dim
 		self.energy = self.init_energy
 		self.carrot_energy = carrot_energy
 		self.manh_distance = manh_distance
+		self.wolf_dirs = wolf_dirs
 		
 	def is_goal(self):
 		""" Checks if adventure is finished """
@@ -28,24 +30,26 @@ class Actions:
 		#8 * 4
 		#7 6 5
 		# Directions may be also encoded as coordinates, with an entity as the origin of the coordinate system
-		# E.g. the coordinates of cell 1 are (-1, 1), cell 2 - (0, 1), etc.
+		# with x axis pointing right and y axis pointing down
+		# E.g. the coordinates of cell 1 are (-1, -1), cell 2 - (0, -1), etc.
 		self.move = {
-				1: (-1, 1),
-				2: (0, 1),
-				3: (1, 1),
+				1: (-1, -1),
+				2: (0, -1),
+				3: (1, -1),
 				4: (1, 0),
-				5: (1, -1),
-				6: (0, -1),
-				7: (-1, -1),
+				5: (1, 1),
+				6: (0, 1),
+				7: (-1, 1),
 				8: (-1, 0)
 		}
+		self.move_rabbit(cells=1)
 		for i in range(len(self.wolf_places)):
 			self.move_wolf(i)
 			wolf_place = self.wolf_places[i]
 			if self.rabbit_place == wolf_place:
 				self.energy -= self.init_energy * 3 / 4
 				self.move_rabbit(cells=4)
-				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
 
 		for i, carrot_place in enumerate(self.carrot_places):
@@ -53,9 +57,10 @@ class Actions:
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
-				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
+				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
-		return (self.rabbit_place, self.wolf_places, self.carrot_places, self.energy, self.is_goal())
+		path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
+		return path
 		
 	def add_carrot(self):
 		""" Add a new carrot from the uniform distribution """
@@ -71,14 +76,13 @@ class Actions:
 		new_positions = []
 		for x in arr:
 			for y in arr:
-				if x == self.rabbit_place[0] and y == self.rabbit_place[1]: continue
-				if x < 0 or y < 0: continue
-				new_x = self.rabbit_place[0] + x
-				new_y = self.rabbit_place[1] + y
+				x_new = self.rabbit_place[0] + x
+				y_new = self.rabbit_place[1] + y
+				if x_new == self.rabbit_place[0] and y_new == self.rabbit_place[1]: continue
+				if self.is_outside_boundaries(x_new) or self.is_outside_boundaries(y_new): continue
 				new_positions.append((new_x, new_y))
-
 		if cells == 1:
-			rand_pos = new_positions[random.randint(0, (cells * 2 + 1) ** 2)]
+			rand_pos = new_positions[random.randint(0, len(new_positions) - 1)]
 			self.rabbit_place = rand_pos
 		else:  # If rabbit moves because of the encounter with the wolf
 			center = int(self.dim / 2)  # Center of the grid
@@ -86,8 +90,8 @@ class Actions:
 			distances = []
 			best_distance = self.dim
 			for new_p in new_positions:
-				distance = math.sqrt((self.rabbit_place[0] - new_p[0]) ** 2 + \
-					                 (self.rabbit_place[1] - new_p[1]) ** 2)
+				distance = math.sqrt((center_coord[0] - new_p[0]) ** 2 + \
+					             (center_coord[1] - new_p[1]) ** 2)
 				if distance < best_distance:     # Move to  a cell closest to the center of the grid
 					best_distance = distance
 					new_position = new_p
@@ -118,33 +122,33 @@ class Actions:
 							if trial_wolf_place in wolf_vision:
 								# The shortest path to the rabbit is based on the Euclidean distance
 								distance = math.sqrt((trial_wolf_place[0] - self.rabbit_place[0]) ** 2 + \
-													 (trial_wolf_place[1] - self.rabbit_place[1]) ** 2)
+										     (trial_wolf_place[1] - self.rabbit_place[1]) ** 2)
 								if distance < best_distance:
 									best_distance = distance
 									new_position = trial_wolf_place
 									
 					self.wolf_places[index] = new_position
-					x_diff = abs(self.rabbit_place[0] - new_position[0])
-					y_diff = abs(self.rabbit_place[1] - new_position[1])
 					for m in self.move.items():
 						# Change direction of the wolf to move towards the rabbit
 						if m[1] == (x_diff / 2, y_diff / 2):
 							self.wolf_dirs[index] = m[0]
 				return
-			else:  # If rabbit is not to be seen
-				trial_wolf_dir_x = self.move[self.wolf_dirs[index]][0]
-				trial_wolf_dir_y = self.move[self.wolf_dirs[index]][1]
-				trial_wolf_place = self.wolf_places[index] + self.move[self.wolf_dirs[index]]
-				if self.is_outside_boundaries(trial_wolf_place[0]):  # If x coordinate is outside the boundary
-					trial_wolf_dir_x = -self.move[wolf_dir][0]       # Change direction of vector projection in x axis
-				if self.is_outside_boundaries(trial_wolf_place[1]):
-					trial_wolf_dir_y = -self.move[wolf_dir][1]
-				trial_wolf_dir = (trial_wolf_dir_x, trial_wolf_dir_y)
-				for m in self.move.items():
-					if m[1] == trial_wolf_dir:
-						self.wolf_dirs[index] = m[0]
-				self.wolf_places[index] = (self.wolf_places[index][0] + self.move[self.wolf_dirs[index]][0],
-					                       self.wolf_places[index][1] + self.move[self.wolf_dirs[index]][1])
+			
+		# If rabbit not to be seen
+		trial_wolf_dir_x = self.move[self.wolf_dirs[index]][0]
+		trial_wolf_dir_y = self.move[self.wolf_dirs[index]][1]
+		trial_wolf_place = (self.wolf_places[index][0] + self.move[self.wolf_dirs[index]][0],
+						    self.wolf_places[index][1] + self.move[self.wolf_dirs[index]][1])
+		if self.is_outside_boundaries(trial_wolf_place[0]):  # If x coordinate is outside the boundary
+			trial_wolf_dir_x = -self.move[wolf_dir][0]       # Change direction of vector projection in x axis
+		if self.is_outside_boundaries(trial_wolf_place[1]):
+			trial_wolf_dir_y = -self.move[wolf_dir][1]
+		trial_wolf_dir = (trial_wolf_dir_x, trial_wolf_dir_y)
+		for m in self.move.items():
+			if m[1] == trial_wolf_dir:
+				self.wolf_dirs[index] = m[0]
+		self.wolf_places[index] = (self.wolf_places[index][0] + self.move[self.wolf_dirs[index]][0],
+			                       self.wolf_places[index][1] + self.move[self.wolf_dirs[index]][1])
 	
 	def rabbit_vision(self):
 		""" Rabbit's space of vision """
@@ -189,7 +193,7 @@ class Actions:
 					wolf_vision.append((x_vision, y_vision))
 		return wolf_vision
 
-	def is_outside_boundaries(self, coord, lower=0, upper=30):
+	def is_outside_boundaries(self, coord, lower=0, upper=29):
 		""" Check if the coordinate is outside the boundaries of the grid """
 		if coord < lower or coord > upper: return True
 		else: return False
