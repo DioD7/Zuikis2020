@@ -2,6 +2,7 @@ import numpy as np
 import math
 import configurations
 import random
+import copy
 
 ####
 #Mechanics of the zuikis adventure.
@@ -97,7 +98,7 @@ class Actions:
 				y_new = self.rabbit_place[1] + y
 				if x_new == self.rabbit_place[0] and y_new == self.rabbit_place[1]: continue
 				if self.is_outside_boundaries(x_new) or self.is_outside_boundaries(y_new): continue
-				new_positions.append((new_x, new_y))
+				new_positions.append((x_new, y_new))
 		if cells == 1:
 			rand_pos = new_positions[random.randint(0, len(new_positions) - 1)]
 			self.rabbit_place = rand_pos
