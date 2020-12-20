@@ -9,22 +9,27 @@ import random
 
 class Actions:
 
-	def __init__(self, configuration, dim, carrot_energy, wolf_dirs, manh_distance=4):
-		self.rabbit_place, self.wolf_places, self.carrot_places = configuration
+	def __init__(self, dim=30, carrot_energy=10, manh_distance=4):
 		self.init_energy = dim ** 2
 		self.dim = dim
-		self.energy = self.init_energy
 		self.carrot_energy = carrot_energy
 		self.manh_distance = manh_distance
-		self.wolf_dirs = wolf_dirs
 		
 	def is_goal(self):
 		""" Checks if adventure is finished """
 		if self.energy <= 0: return True
 		return False
 
-	def interactions(self):
-		""" Interactions when agents are in the same cell """
+	def interactions(self, agent_places, energy, wolf_dirs):
+		""" Interactions when agents are in the same cell
+		Returns a tuple consisting of:
+		self.rabbit_place:   new rabbit position
+		self.wolf_places:    new wolf positions
+		self.carrot_places:  carrot positions
+		self.wolf_dirs:      wolf moving directions
+		self.energy:         current rabbit energy
+		self.is_goal():      is the end of the simulation is reached
+		"""
 		##Directions around an entity encoded by double compass letters and a number, starting from NW: 1
 		#1 2 3
 		#8 * 4
@@ -42,23 +47,35 @@ class Actions:
 				7: (-1, 1),
 				8: (-1, 0)
 		}
-		self.move_rabbit(cells=1)
-		for i in range(len(self.wolf_places)):
-			self.move_wolf(i)
-			wolf_place = self.wolf_places[i]
-			if self.rabbit_place == wolf_place:
-				self.energy -= self.init_energy * 3 / 4
-				self.move_rabbit(cells=4)
-				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
-				return path
+		
+		self.rabbit_place, self.wolf_places, self.carrot_places = copy.deepcopy(agent_places)
+		self.energy = energy
+		self.wolf_dirs = wolf_dirs
+		
+		if self.rabbit_place in self.wolf_places:
+			for i in range(len(self.wolf_places)):
+				wolf_place = self.wolf_places[i]
+				if self.rabbit_place == wolf_place:
+					self.energy -= self.init_energy * 1 / 4
+			self.move_rabbit(cells=4)
+			for j in range(len(self.wolf_places)):
+				self.move_wolf(j)
+			path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
+			return path
 
 		for i, carrot_place in enumerate(self.carrot_places):
 			if self.rabbit_place == carrot_place:
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
+				self.move_rabbit(cells=1)
+				for j in range(len(self.wolf_places)):
+					self.move_wolf(j)
 				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
+		self.move_rabbit(cells=1)
+		for j in range(len(self.wolf_places)):
+			self.move_wolf(j)
 		path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 		return path
 		
