@@ -74,9 +74,10 @@ class Actions:
 					self.move_wolf(j)
 				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
-		self.move_rabbit(cells=1)
+		# Wolf is moved first here
 		for j in range(len(self.wolf_places)):
 			self.move_wolf(j)
+		self.move_rabbit(cells=1)
 		path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 		return path
 		
@@ -122,10 +123,10 @@ class Actions:
 		wolf_vision = self.wolf_vision(wolf_place, wolf_dir)
 		for i, vision in enumerate(wolf_vision):
 			if self.rabbit_place == vision:  # If rabbit is seen by the wolf
-				x_diff = abs(self.rabbit_place[0] - wolf_place[0])
-				y_diff = abs(self.rabbit_place[1] - wolf_place[1])
+				x_diff = self.rabbit_place[0] - wolf_place[0]
+				y_diff = self.rabbit_place[1] - wolf_place[1]
 				# If the rabbit can be caught by making a single move
-				if (x_diff in [0, 2] and y_diff in [0, 2]) and \
+				if (x_diff in [-2, 0, 2] and y_diff in [-2, 0, 2]) and \
 				   ((x_diff, y_diff) != (0, 0)):
 					self.wolf_places[index] = self.rabbit_place
 					for m in self.move.items():
@@ -137,14 +138,15 @@ class Actions:
 					for i in range(-2, 3, 2):
 						for j in range(-2, 3, 2):
 							trial_wolf_place = (wolf_place[0] + i, wolf_place[1] + j)
-							if trial_wolf_place in wolf_vision:
+							if trial_wolf_place in wolf_vision and (i, j) != (0, 0):
 								# The shortest path to the rabbit is based on the Euclidean distance
 								distance = math.sqrt((trial_wolf_place[0] - self.rabbit_place[0]) ** 2 + \
 										     (trial_wolf_place[1] - self.rabbit_place[1]) ** 2)
 								if distance < best_distance:
 									best_distance = distance
 									new_position = trial_wolf_place
-									
+					x_diff = new_position[0] - wolf_place[0]
+					y_diff = new_position[1] - wolf_place[1]				
 					self.wolf_places[index] = new_position
 					for m in self.move.items():
 						# Change direction of the wolf to move towards the rabbit
@@ -153,6 +155,10 @@ class Actions:
 				return
 			
 		# If rabbit not to be seen
+		if self.wolf_dirs[index] % 2 == 0:  # Move diagonally to right if current direction is non-diagonal
+											# If current direction is diagonal, it is preserved
+			self.wolf_dirs[index] = (self.wolf_dirs[index] + 1) % 8
+			
 		trial_wolf_dir_x = self.move[self.wolf_dirs[index]][0]
 		trial_wolf_dir_y = self.move[self.wolf_dirs[index]][1]
 		trial_wolf_place = (self.wolf_places[index][0] + self.move[self.wolf_dirs[index]][0],
@@ -183,31 +189,25 @@ class Actions:
 		return rabbit_vision
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
-		""" Wolf's space of vision """
-		# Directions described as the coordinates from the origin as dictionary keys; dictionary values are limits
-		# for the coordinates, based on the shape of the Manhattan space;
-		# limits are formatted as [(x_min, x_max), (y_min, y_max)]
-		intervals = {
-					 (-1, 1): [(-4, 2), (-2, 4)],
-					 (0, 1): [(-4, 4), (0, 4)],
-					 (1, 1): [(-2, 4), (-2, 4)],
-					 (1, 0): [(0, 4), (-4, 4)],
-					 (1, -1): [(-2, 4), (-4, 2)],
-					 (0, -1): [(-4, 0), (-4, 4)],
-					 (-1, -1): [(-4, 2), (-4, 2)],
-					 (-1, 0): [(-4, 0), (-4, 4)]
-		}
-		manh_boundaries = intervals[self.move[wolf_dir]]
-
+		""" Wolf's space of vision
+		The cells that wolf can see are decided by determining which cells are below the line that separates wolf's
+		"back" and "front" view. Positions that are below the line are determined by calculating the cross product
+		of two vectors: a vector lying on the line and a vector pointing to the cell in question. If the cross product
+		of these two is positive, the cell is behind wolf's back, thus it is discarded.
+		"""
+		wolf_dir_90deg = (wolf_dir + 2) % 8
+		line_vector = self.move[wolf_dir_90deg]
 		wolf_vision = []
 		for i in range(-self.manh_distance, self.manh_distance + 1):
 			for j in range(-self.manh_distance, self.manh_distance + 1):
-				if i >= manh_boundaries[0][0] and i <= manh_boundaries[0][1] and \
-				   j >= manh_boundaries[1][0] and j <= manh_boundaries[1][1]:
-					if np.abs(i) + np.abs(j) > self.manh_distance: continue
-					x_vision = wolf_place[0] + i
-					y_vision = wolf_place[1] + j
-					if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
+				if np.abs(i) + np.abs(j) > self.manh_distance: continue  # If coordinate is outside Manhattan space
+				x_vision = wolf_place[0] + i
+				y_vision = wolf_place[1] + j
+				# Wolf cannot see beyond the walls
+				if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
+				point_vector = (i, j)
+				cross_product = line_vector[0] * point_vector[1] - line_vector[1] * point_vector[0]
+				if cross_product <= 0:
 					wolf_vision.append((x_vision, y_vision))
 		return wolf_vision
 
