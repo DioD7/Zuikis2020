@@ -1,6 +1,26 @@
 import window
 import configurations
+import adventure
 import random
+
+
+def test_actions():
+    random.seed(0)
+    start = configurations.TestFields.getTests()[0]
+    dms = start.get_dims()
+    act = adventure.Actions()
+    state = start.get_state()[0:-1]
+    energy = start.get_state()[-1]
+    dirs = [3]
+    path = [start.get_state()]
+    for i in range(100):
+        next_state = act.interactions(state, energy, dirs)
+        state = next_state[0:3]
+        energy = next_state[4]
+        dirs = next_state[3]
+        path.append(list(state) + [energy])
+
+    wind = window.Window(path = path, dim = dms)
 
 
 def test_field():
@@ -27,4 +47,5 @@ def test_path():
 
 if __name__ == '__main__':
     #test_path()
-    test_field()
+    #test_field()
+    test_actions()
