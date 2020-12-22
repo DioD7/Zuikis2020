@@ -3,6 +3,7 @@ import math
 import configurations
 import random
 import copy
+from configurations import generate_carrots
 
 ####
 #Mechanics of the zuikis adventure.
@@ -10,18 +11,19 @@ import copy
 
 class Actions:
 
-	def __init__(self, dim=30, carrot_energy=10, manh_distance=4):
+	def __init__(self, dim=30, carrot_factor=0.9, carrot_energy=10, manh_distance=4):
 		self.init_energy = dim ** 2
 		self.dim = dim
 		self.carrot_energy = carrot_energy
 		self.manh_distance = manh_distance
+		self.carrot_factor = carrot_factor
 		
 	def is_goal(self):
 		""" Checks if adventure is finished """
 		if self.energy <= 0: return True
 		return False
 
-	def interactions(self, agent_places, energy, wolf_dirs):
+	def interactions(self, agent_places, next_rabbit_place, energy, wolf_dirs):
 		""" Interactions when agents are in the same cell
 		Returns a tuple consisting of:
 		self.rabbit_place:   new rabbit position
@@ -58,7 +60,7 @@ class Actions:
 				wolf_place = self.wolf_places[i]
 				if self.rabbit_place == wolf_place:
 					self.energy -= self.init_energy * 1 / 4
-			self.move_rabbit(cells=4)
+			self.move_rabbit()
 			for j in range(len(self.wolf_places)):
 				self.move_wolf(j)
 			path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
@@ -69,41 +71,30 @@ class Actions:
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
-				self.move_rabbit(cells=1)
 				for j in range(len(self.wolf_places)):
 					self.move_wolf(j)
+				self.move_rabbit(next_rabbit_place)
 				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
 		# Wolf is moved first here
 		for j in range(len(self.wolf_places)):
 			self.move_wolf(j)
-		self.move_rabbit(cells=1)
+		self.move_rabbit(next_rabbit_place)
 		path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 		return path
 		
 	def add_carrot(self):
 		""" Add a new carrot from the uniform distribution """
-		pass
+		carrot, _ = generate_carrots(dims=(self.dim, self.dim), dist=self.carrot_energy * self.carrot_factor, n_carrots=1)
+		self.carrot_places.append(carrot[0])
 
 	def eat_carrot(self, index):
 		""" Delete eaten carrot from the carrot list """
 		del self.carrot_places[index]
 
-	def move_rabbit(self, cells=1):
+	def move_rabbit(self, next_rabbit_place=None):
 		""" Move rabbit to another cell """
-		arr = np.array([-cells, 0, cells])
-		new_positions = []
-		for x in arr:
-			for y in arr:
-				x_new = self.rabbit_place[0] + x
-				y_new = self.rabbit_place[1] + y
-				if x_new == self.rabbit_place[0] and y_new == self.rabbit_place[1]: continue
-				if self.is_outside_boundaries(x_new) or self.is_outside_boundaries(y_new): continue
-				new_positions.append((x_new, y_new))
-		if cells == 1:
-			rand_pos = new_positions[random.randint(0, len(new_positions) - 1)]
-			self.rabbit_place = rand_pos
-		else:  # If rabbit moves because of the encounter with the wolf
+		if not next_rabbit_place:  # If rabbit moves because of the encounter with the wolf
 			center = int(self.dim / 2)  # Center of the grid
 			center_coord = (center, center)
 			distances = []
@@ -115,6 +106,8 @@ class Actions:
 					best_distance = distance
 					new_position = new_p
 			self.rabbit_place = new_position
+		else:  # Otherwise, move rabbit to a destined space
+			self.rabbit_place = next_rabbit_place
 
 	def move_wolf(self, index):
 		""" Move wolf """
@@ -196,6 +189,7 @@ class Actions:
 		of these two is positive, the cell is behind wolf's back, thus it is discarded.
 		"""
 		wolf_dir_90deg = (wolf_dir + 2) % 8
+		if wolf_dir_90deg == 0: wolf_dir_90deg = 1
 		line_vector = self.move[wolf_dir_90deg]
 		wolf_vision = []
 		for i in range(-self.manh_distance, self.manh_distance + 1):

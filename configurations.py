@@ -42,15 +42,14 @@ def prob_density(carrot_places):
 	return prob
 
 
-def generate_carrots_fromdensity(dims, dist):
+def generate_carrots_fromdensity(dims, dist, n_carrots):
 	"""Generates carrots from density distribution"""
 	pass
 
 
-def generate_carrots_fromuniform(dims, dist):
+def generate_carrots_fromuniform(dims, dist, n_carrots):
 	"""Generates carrots from uniform distribution in a field"""
 	n_carrots = int(dims[0]*dims[1]/(math.pi*dist**2))
-	if n_carrots == 0: n_carrots = 1
 	carrots = []
 	for i in range(n_carrots):
 		next_carrot = (random.randint(0, dims[0]-1), random.randint(0, dims[1]-1))
@@ -58,9 +57,9 @@ def generate_carrots_fromuniform(dims, dist):
 	return carrots, n_carrots
 
 
-def generate_carrots(dims, dist):
-	# return generate_carrots_fromdensity(dims, factor)
-	return generate_carrots_fromuniform(dims, dist)
+def generate_carrots(dims, dist, n_carrots = None):
+	# return generate_carrots_fromdensity(dims, dist, n_carrots)
+	return generate_carrots_fromuniform(dims, dist, n_carrots)
 
 
 class Field:
@@ -82,7 +81,7 @@ class Field:
 	}
 	dir_names = ('NN', 'NE', 'EE', 'SE', 'SS', 'SW', 'WW', 'NW')
 
-	def __init__(self, dims = None, zuikis = None, vilkai = None, carrotfactor = 0.9, carrotenergy = 10):
+	def __init__(self, dims = None, zuikis = None, vilkai = None, carrotfactor = 0.9, carrotenergy = DEFAULT_DIMS[0]):
 		if not dims: self.dims = DEFAULT_DIMS
 		else: self.dims = dims
 		if not zuikis: self.zuikis = [random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]
@@ -117,12 +116,3 @@ class TestFields:
 		tests.append(Field(carrotenergy=15))
 		tests.append(Field(dims=(15,15), zuikis=[5, 7], vilkai=[[8, 7]], carrotenergy=10))
 		return tests
-
-	@staticmethod
-	def showTest(n):
-		tst = TestFields.getTests()[n]
-		return window.Window(path=[tst.get_state()], dim = tst.get_dims())
-
-	@staticmethod
-	def showState(st, dims):
-		return window.Window(path=[st], dim = dims)
