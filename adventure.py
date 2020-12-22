@@ -23,7 +23,7 @@ class Actions:
 		if self.energy <= 0: return True
 		return False
 
-	def interactions(self, agent_places, next_rabbit_place, energy, wolf_dirs):
+	def interactions(self, agent_places, rabbit_dir, wolf_dirs, energy):
 		""" Interactions when agents are in the same cell
 		Returns a tuple consisting of:
 		self.rabbit_place:   new rabbit position
@@ -54,6 +54,8 @@ class Actions:
 		self.rabbit_place, self.wolf_places, self.carrot_places = copy.deepcopy(agent_places)
 		self.energy = energy
 		self.wolf_dirs = wolf_dirs
+		next_rabbit_place = (self.rabbit_place[0] + self.move[rabbit_dir][0],
+				     self.rabbit_place[1] + self.move[rabbit_dir][1])
 		
 		if self.rabbit_place in self.wolf_places:
 			for i in range(len(self.wolf_places)):
