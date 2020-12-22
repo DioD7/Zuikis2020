@@ -85,8 +85,8 @@ class Actions:
 		
 	def add_carrot(self):
 		""" Add a new carrot from the uniform distribution """
-		generate_carrots(dims=(self.dim, self.dim), dist=self.carrot_energy * self.carrot_factor, n_carrots=1)
-		pass
+		carrot, _ = generate_carrots(dims=(self.dim, self.dim), dist=self.carrot_energy * self.carrot_factor, n_carrots=1)
+		self.carrot_places.append(carrot[0])
 
 	def eat_carrot(self, index):
 		""" Delete eaten carrot from the carrot list """
@@ -189,6 +189,7 @@ class Actions:
 		of these two is positive, the cell is behind wolf's back, thus it is discarded.
 		"""
 		wolf_dir_90deg = (wolf_dir + 2) % 8
+		if wolf_dir_90deg == 0: wolf_dir_90deg = 1
 		line_vector = self.move[wolf_dir_90deg]
 		wolf_vision = []
 		for i in range(-self.manh_distance, self.manh_distance + 1):
