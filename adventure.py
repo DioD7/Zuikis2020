@@ -95,6 +95,17 @@ class Actions:
 	def move_rabbit(self, next_rabbit_place=None):
 		""" Move rabbit to another cell """
 		if not next_rabbit_place:  # If rabbit moves because of the encounter with the wolf
+			cells = 4  # Move rabbit 4 cells from its position
+			arr = np.array([-cells, 0, cells])
+			new_positions = []
+			for x in arr:
+				for y in arr:
+					x_new = self.rabbit_place[0] + x
+					y_new = self.rabbit_place[1] + y
+					if x_new == self.rabbit_place[0] and y_new == self.rabbit_place[1]: continue
+					if self.is_outside_boundaries(x_new) or self.is_outside_boundaries(y_new): continue
+					new_positions.append((x_new, y_new))
+					
 			center = int(self.dim / 2)  # Center of the grid
 			center_coord = (center, center)
 			distances = []
