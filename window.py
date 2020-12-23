@@ -86,7 +86,6 @@ class Window:
             self.playing = not self.playing
         self.play_button = tk.Button(self.root, text='Play', command = on_play_press, width = 25, relief = tk.SUNKEN, bg= self.gui_fg_num)
         self.play_button.grid(row = 4, column = self.width-self.guilen, columnspan = self.guilen)
-        print(self.speed)
         #Animation speed slider
         self.speed_slider = tk.Scale(self.root, label = 'Speed', from_ = 0.5, to = 15,orient = tk.HORIZONTAL, length = self.guilen-10,activebackground = self.gui_fg_num)
         self.speed_slider.bind('<B1-Motion>', self.speed_slider_onpressmove)

@@ -81,7 +81,7 @@ class Field:
 	}
 	dir_names = ('NN', 'NE', 'EE', 'SE', 'SS', 'SW', 'WW', 'NW')
 
-	def __init__(self, dims = None, zuikis = None, vilkai = None, carrotfactor = 0.9, carrotenergy = DEFAULT_DIMS[0]):
+	def __init__(self, dims = None, zuikis = None, vilkai = None, carrots = None, carrotfactor = 0.9, carrotenergy = DEFAULT_DIMS[0]):
 		if not dims: self.dims = DEFAULT_DIMS
 		else: self.dims = dims
 		if not zuikis: self.zuikis = [random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]
@@ -92,7 +92,9 @@ class Field:
 		else: self.nvilkai = len(vilkai); self.vilkai = vilkai
 		self.carrot_energy = carrotenergy
 		self.carrot_factor = carrotfactor
-		self.carrots, self.ncarrots = generate_carrots(self.dims, carrotfactor * carrotenergy) #Generate carrots
+		if not carrots:
+			self.carrots, self.ncarrots = generate_carrots(self.dims, carrotfactor * carrotenergy) #Generate carrots
+		else: self.carrots, self.ncarrots = carrots, len(carrots)
 		self.vilk_dirs = [[self.dirs['EE']]]*self.nvilkai #Set initial wolves moving direction to East
 		self.energy = self.dims[0] * self.dims[1] #Starting energy of the zuikis
 		#Generate initial state
@@ -101,7 +103,13 @@ class Field:
 	def get_state(self):
 		return self.state
 
+	def get_places(self):
+		return self.state[0:3]
+
 	def get_dims(self): return self.dims
+
+	def show(self):
+		return window.Window(path = [self.state], dim=self.dims)
 
 
 class TestFields:

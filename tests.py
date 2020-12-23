@@ -4,6 +4,23 @@ import adventure
 import random
 
 
+def test_vision():
+    start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
+    act = adventure.Actions(agent_places=start.get_places())
+    dms = start.get_dims()
+    state = start.get_state()[0:-1]
+    energy = start.get_state()[-1]
+    dirs = [3]
+    path = [start.get_state()]
+    for i in range(50):
+        next_state = act.interactions(state, 8, dirs, energy)
+        state = next_state[0:3]
+        energy = next_state[4]
+        dirs = next_state[3]
+        path.append(list(state) + [energy])
+    adventure.print_zuikis_state(act.rabbit_vision())
+    wind = window.Window(path=path, dim=dms)
+
 def test_actions():
     random.seed(0)
     start = configurations.TestFields.getTests()[0]
@@ -14,12 +31,11 @@ def test_actions():
     dirs = [3]
     path = [start.get_state()]
     for i in range(100):
-        next_state = act.interactions(state, energy, dirs)
+        next_state = act.interactions(state, 8, dirs, energy)
         state = next_state[0:3]
         energy = next_state[4]
         dirs = next_state[3]
         path.append(list(state) + [energy])
-
     wind = window.Window(path = path, dim = dms)
 
 
@@ -48,4 +64,5 @@ def test_path():
 if __name__ == '__main__':
     #test_path()
     #test_field()
-    test_actions()
+    #test_actions()
+    test_vision()

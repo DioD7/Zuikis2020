@@ -9,9 +9,42 @@ from configurations import generate_carrots
 #Mechanics of the zuikis adventure.
 ####
 
+
+#State element identifiers for Zuikis(rabbit) state
+elem = {
+	'empty': 0,
+	'zuikis': 1,
+	'carrot': 2,
+	'none': -1,
+	'vilkas': -2
+}
+inv_elem =  {val: key for key, val in elem.items()}
+print_symbs = {
+	0: '_',
+	1: 'Z',
+	2: 'C',
+	-1: ' ',
+	-2: 'W',
+}
+#Zuikis vision relative element coordinates in terms of y displacement
+zuikis_displacement = {
+	-4: tuple([0]),
+	-3: (-1, 0, 1),
+	-2: (-2,-1, 0, 1, 2),
+	-1: (-3, -2, -1, 0, 1,2,2),
+	0: (-4, -3, -2, -1, 0, 1, 2, 3, 4),
+	1: (-3, -2, -1, 0, 1, 2, 2),
+	2: (-2, -1, 0, 1, 2),
+	3: (-1, 0, 1),
+	4: tuple([0])
+}
+
+
 class Actions:
 
-	def __init__(self, dim=30, carrot_factor=0.9, carrot_energy=10, manh_distance=4):
+	def __init__(self, agent_places = None, dim=30, carrot_factor=0.9, carrot_energy=10, manh_distance=4):
+		if agent_places:
+			self.rabbit_place, self.wolf_places, self.carrot_places = copy.deepcopy(agent_places)
 		self.init_energy = dim ** 2
 		self.dim = dim
 		self.carrot_energy = carrot_energy
@@ -119,7 +152,7 @@ class Actions:
 					best_distance = distance
 					new_position = new_p
 			self.rabbit_place = new_position
-		else:  # Otherwise, move rabbit to a destined space
+		elif not self.is_outside_boundaries(next_rabbit_place[0]) and not self.is_outside_boundaries(next_rabbit_place[1]):  # Otherwise, move rabbit to a destined space
 			self.rabbit_place = next_rabbit_place
 
 	def move_wolf(self, index):
@@ -183,16 +216,26 @@ class Actions:
 	def rabbit_vision(self):
 		""" Rabbit's space of vision """
 		rabbit_vision = []
-		for i in range(-self.manh_distance, self.manh_distance + 1):
-			for j in range(-self.manh_distance, self.manh_distance + 1):
-				if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside the
-											                             # Manhattan space
-				x_vision = self.rabbit_place[0] + i
-				y_vision = self.rabbit_place[1] + j
-				# Boundary conditions
-				if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
-				rabbit_vision.append((x_vision, y_vision))
-		return rabbit_vision
+		# for i in range(-self.manh_distance, self.manh_distance + 1):
+		# 	for j in range(-self.manh_distance, self.manh_distance + 1):
+		# 		if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside the
+		# 									                             # Manhattan space
+		# 		x_vision = self.rabbit_place[0] + i
+		# 		y_vision = self.rabbit_place[1] + j
+		# 		# Boundary conditions
+		# 		if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
+		# 		rabbit_vision.append((x_vision, y_vision))
+		for y in range(-4,5):
+			for x in zuikis_displacement[y]:
+				point = (self.rabbit_place[0] + x, self.rabbit_place[1] + y)
+				if point in self.wolf_places: rabbit_vision.append(elem['vilkas'])
+				elif point in self.carrot_places: rabbit_vision.append(elem['carrot'])
+				elif point == self.rabbit_place: rabbit_vision.append(elem['zuikis'])
+				elif self.is_outside_boundaries(point[0]) or self.is_outside_boundaries(point[1]):
+					rabbit_vision.append(elem['none'])
+				else: rabbit_vision.append(elem['empty'])
+
+		return tuple(rabbit_vision)
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
 		""" Wolf's space of vision
@@ -222,3 +265,16 @@ class Actions:
 		""" Check if the coordinate is outside the boundaries of the grid """
 		if coord < lower or coord > upper: return True
 		else: return False
+
+
+def print_zuikis_state(st):
+	"""Prints simple visualization of zuikis state into the console"""
+	indexes = [1, 3, 5, 7, 9, 7, 5, 3, 1]
+	current = 0
+	for i in indexes:
+		sides = (9 - i) // 2
+		print('  '*sides, end='')
+		for j in range(i):
+			print('{} '.format(print_symbs[st[current + j]]), end='')
+		print('  ' * sides)
+		current += i
