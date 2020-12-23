@@ -89,13 +89,14 @@ class Field:
 		if not vilkai:
 			self.nvilkai = 1
 			self.vilkai = [[random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]]
-		else: self.nvilkai = len(vilkai); self.vilkai = vilkai
+		else:
+			self.nvilkai, self.vilkai = len(vilkai), vilkai
 		self.carrot_energy = carrotenergy
 		self.carrot_factor = carrotfactor
 		if not carrots:
 			self.carrots, self.ncarrots = generate_carrots(self.dims, carrotfactor * carrotenergy) #Generate carrots
 		else: self.carrots, self.ncarrots = carrots, len(carrots)
-		self.vilk_dirs = [[self.dirs['EE']]]*self.nvilkai #Set initial wolves moving direction to East
+		self.vilk_dirs = [self.dirs['EE']]*self.nvilkai #Set initial wolves moving direction to East
 		self.energy = self.dims[0] * self.dims[1] #Starting energy of the zuikis
 		#Generate initial state
 		self.state = (self.zuikis, self.vilkai, self.carrots, self.energy)
@@ -106,7 +107,14 @@ class Field:
 	def get_places(self):
 		return self.state[0:3]
 
-	def get_dims(self): return self.dims
+	def get_dims(self):
+		return self.dims
+
+	def get_energy(self):
+		return self.energy
+
+	def get_wolf_dirs(self):
+		return
 
 	def show(self):
 		return window.Window(path = [self.state], dim=self.dims)

@@ -3,7 +3,9 @@ import math
 import configurations
 import random
 import copy
+
 from configurations import generate_carrots
+import window
 
 ####
 #Mechanics of the zuikis adventure.
@@ -38,6 +40,61 @@ zuikis_displacement = {
 	3: (-1, 0, 1),
 	4: tuple([0])
 }
+
+
+class Story:
+	"""Class for complete story of Zuikis travels"""
+
+	def __init__(self, field, record = True):
+		"""field: initial state of the adventure
+		record: whatever to record a path for the adventure
+		"""
+		self.field = field
+		self.has_ended = False
+		self.record = record
+		self.moves = 0
+
+		self.dims = self.field.get_dims()
+		self.places = self.field.get_places()
+		self.energy = self.field.get_energy()
+		self.wolf_dirs = self.field.vilk_dirs
+		self.dirs = []
+		self.action = Actions(agent_places=self.places,carrot_energy=self.field.carrot_energy, carrot_factor=self.field.carrot_factor)
+		if record:
+			self.path = [(self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision())]
+		else: self.path = []
+
+	def move(self, dir):
+		if self.has_ended:
+			print('Warning: the story has ended for Zuikis.')
+		if isinstance(dir, str):
+			dir = configurations.Field.dirs[dir]
+		self.dirs.append(dir)
+		state = self.action.interactions(self.places, dir, self.wolf_dirs, self.energy)
+		self.places = state[0:3]
+		self.energy = state[4]
+		self.wolf_dirs = state[3]
+		if self.energy <= 0 or state[5]:
+			self.has_ended = True
+		if self.record:
+			next_step = (self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision())
+			self.path.append(next_step)
+
+	def is_over(self):
+		return self.has_ended
+
+	def show(self, speed = 2):
+		if self.record:
+			return window.Window(path=self.path, dim=self.dims, speed = speed)
+		else:
+			print('Warning: story has no record to show.')
+			return None
+
+	def get_path(self):
+		return self.path
+
+	def get_current_energy(self):
+		return self.energy
 
 
 class Actions:

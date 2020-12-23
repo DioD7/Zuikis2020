@@ -10,17 +10,18 @@ from entities import Zuikis, Vilkas, Morka
 
 ##
 #Path must be a list of game states. Each state describes the game completely i.e. it tells where every entity is on the grid.
-#Each state has 4 elements: zuikis, wolves, carrots, energy
+#Each state has 5 elements: zuikis, wolves, carrots, energy, zuikis state.
 #Zuikis element is tuple of 2 numbers where zuikis is on the board. In terms of square coordinates
 #Wolves element is a list of tuples. Each tuple is square coordinates for each wolf
 #Carrot element is a list of tuples for each carrot. Again tuples containt coordinates in the grid.
-#Energy is last element and is a number that represents energy of zuikis in the state.
+#Energy element is a number that represents energy of zuikis in the state.
+#Zuikis state is last element that consists of current field of view for zuikis.
 #Diference between each state is one turn. For example game is initialized in state Path[0], then entities make their moves
 #and game evolves to state Path[1].
 ##
 
 class Window:
-    def __init__(self, path = None, dim = (30, 30), squaredim = 25):
+    def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1):
         self.guilen = 250
         self.path = path
         self.root = tk.Tk() #Main window
@@ -46,7 +47,7 @@ class Window:
         self.current_state = 0
         self.playing = True
         self.interval = 1 #Wait time while playing in seconds
-        self.speed = 1 #Speed of playing: speed = 1/interval and viceversa
+        self.speed = speed #Speed of playing: speed = 1/interval and viceversa
         self.last_gui_update = perf_counter()
         self.gui_bg = 'snow'
         self.gui_fg_text = 'black'
@@ -88,6 +89,7 @@ class Window:
         self.play_button.grid(row = 4, column = self.width-self.guilen, columnspan = self.guilen)
         #Animation speed slider
         self.speed_slider = tk.Scale(self.root, label = 'Speed', from_ = 0.5, to = 15,orient = tk.HORIZONTAL, length = self.guilen-10,activebackground = self.gui_fg_num)
+        self.speed_slider.set(self.speed)
         self.speed_slider.bind('<B1-Motion>', self.speed_slider_onpressmove)
         self.speed_slider.grid(row = 5, column = self.width-self.guilen, columnspan = self.guilen)
 
@@ -143,7 +145,7 @@ class Window:
         """Update current field and gui elements"""
         self.field.set_state(self.path[self.current_state])
         self.current_move_num.config(text = str(self.current_state))
-        self.current_energy_num.config(text = '{:.1f}'.format(float(self.path[self.current_state][-1])))
+        self.current_energy_num.config(text = '{:.1f}'.format(float(self.path[self.current_state][3])))
 
 
 class FieldState:
