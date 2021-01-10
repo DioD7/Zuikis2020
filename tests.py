@@ -1,7 +1,25 @@
 import window
 import configurations
 import adventure
+import utils
 import random
+import sys
+from inspect import getmembers, isfunction
+
+
+def test_zuikis_vision2():
+    random.seed(0)
+    start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
+    story = adventure.Story(start)
+    story.get_vision().print_state()
+    wind = story.show()
+
+
+def test_zuikisstate():
+    state1 = adventure.ZuikisState([(1,1),(24,5)],[(12,22),(7,9)],[-4, 0])
+    state2 = adventure.ZuikisState([ (24, 5),(1, 1)], [(12, 22), (7, 9)],[-4, 0])
+    d = {state1: 'One'}
+    print(state2 in d.keys())
 
 
 def test_story():
@@ -10,10 +28,7 @@ def test_story():
     story = adventure.Story(start)
     for i in range(25):
         story.move('EE')
-    for p in story.get_path():
-        print(p)
     wind = story.show()
-
 
 
 def test_vision():
@@ -73,9 +88,51 @@ def test_path():
     wind = window.Window(path=sample_path)
 
 
+class Testing:
+    def __init__(self):
+        self.tests = [[obj, name] for name, obj in getmembers(sys.modules[__name__]) if isfunction(obj) and name.startswith('test')]
+        self.breaker = '='*80
+        self.breaker2 = '*'*85
+
+    def execute(self):
+        """Executes all the tests starting from the last one"""
+        print('Found',len(self.tests), 'tests.')
+        for i in reversed(range(len(self.tests))):
+            self.sep2()
+            test = self.tests[i]
+            test_func = utils.time_it(test[0])
+            print('EXECUTING Test:',test[1])
+            self.sep()
+            rezult, time = test_func()
+            self.sep()
+            print('Test finished in', '{:.4f}'.format(time), 's')
+            ans = input('Launch next?(y/n)')
+            if ans.lower() == 'n':
+                break
+
+    def execute_by_input(self, default = None):
+        print('FOUND',len(self.tests), 'TESTS:')
+        for i in range(len(self.tests)):
+            print(i+1, '. ', self.tests[i][1], sep='')
+        if default: num = default - 1
+        else:
+            ans = input('Launch which test?')
+            num = int(ans) - 1
+        self.sep2()
+        test = self.tests[num]
+        test_func = utils.time_it(test[0])
+        self.sep()
+        rezult, time = test_func()
+        self.sep()
+        print('Test finished in', '{:.4f}'.format(time), 's')
+
+    def sep(self):
+        print(self.breaker)
+
+    def sep2(self):
+        print(self.breaker2)
+
+
 if __name__ == '__main__':
-    #test_path()
-    #test_field()
-    #test_actions()
-    #test_vision()
-    test_story()
+    test = Testing()
+    test.execute_by_input(default = 6)

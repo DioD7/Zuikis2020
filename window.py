@@ -78,7 +78,6 @@ class Window:
         self.path_slider.bind('<B1-Motion>', self.path_slider_onpressmove)
         self.path_slider.grid(column = self.width-self.guilen, row = 3, columnspan = self.guilen)
 
-
         #Play button
         def on_play_press():
             if self.playing:
@@ -92,6 +91,10 @@ class Window:
         self.speed_slider.set(self.speed)
         self.speed_slider.bind('<B1-Motion>', self.speed_slider_onpressmove)
         self.speed_slider.grid(row = 5, column = self.width-self.guilen, columnspan = self.guilen)
+        ##Canvas to zuikis state
+        self.zuikis_state = tk.Canvas(self.root, width = self.guilen, height = self.guilen)
+        self.zuikis_state.grid(row=6, column=self.width - self.guilen, columnspan=self.guilen, rowspan = self.guilen)
+        self.zuikis_state.create_line(0,0, self.guilen, self.guilen)
 
         ##Rest
         ######

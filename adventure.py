@@ -90,6 +90,9 @@ class Story:
 			print('Warning: story has no record to show.')
 			return None
 
+	def get_vision(self):
+		return self.action.rabbit_vision()
+
 	def get_path(self):
 		return self.path
 
@@ -282,17 +285,17 @@ class Actions:
 		# 		# Boundary conditions
 		# 		if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
 		# 		rabbit_vision.append((x_vision, y_vision))
-		for y in range(-4,5):
-			for x in zuikis_displacement[y]:
-				point = (self.rabbit_place[0] + x, self.rabbit_place[1] + y)
-				if point in self.wolf_places: rabbit_vision.append(elem['vilkas'])
-				elif point in self.carrot_places: rabbit_vision.append(elem['carrot'])
-				elif point == self.rabbit_place: rabbit_vision.append(elem['zuikis'])
-				elif self.is_outside_boundaries(point[0]) or self.is_outside_boundaries(point[1]):
-					rabbit_vision.append(elem['none'])
-				else: rabbit_vision.append(elem['empty'])
+		wolves = []
+		carrots = []
+		for w in self.wolf_places:
+			if Actions.manh_dist(self.rabbit_place, w) <= self.manh_distance:
+				wolves.append((w[0]-self.rabbit_place[0],w[1]-self.rabbit_place[1]))
+		for c in self.carrot_places:
+			if Actions.manh_dist(self.rabbit_place, c) <= self.manh_distance:
+				carrots.append((c[0]-self.rabbit_place[0],c[1]-self.rabbit_place[1]))
+		vision = ZuikisState(wolves, carrots, [0,0])
 
-		return tuple(rabbit_vision)
+		return vision
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
 		""" Wolf's space of vision
@@ -316,12 +319,38 @@ class Actions:
 				cross_product = line_vector[0] * point_vector[1] - line_vector[1] * point_vector[0]
 				if cross_product <= 0:
 					wolf_vision.append((x_vision, y_vision))
+
 		return wolf_vision
 
 	def is_outside_boundaries(self, coord, lower=0, upper=29):
 		""" Check if the coordinate is outside the boundaries of the grid """
 		if coord < lower or coord > upper: return True
 		else: return False
+
+	@staticmethod
+	def manh_dist(one, two):
+		return abs(two[0] - one[0]) +abs(two[1] - one[1])
+
+
+class ZuikisState:
+
+	def __init__(self, wolves, carrots, walls):
+		self.wolves = frozenset(wolves)
+		self.carrots = frozenset(carrots)
+		self.walls = tuple(walls)
+		self.hsh = hash((self.wolves, self.carrots, self.walls))
+
+	def __hash__(self):
+		return self.hsh
+
+	def __eq__(self, other):
+		return self.hsh == other.hsh
+
+	def print_state(self):
+		print((self.wolves, self.carrots, self.walls))
+
+	def show(self):
+		pass
 
 
 def print_zuikis_state(st):
