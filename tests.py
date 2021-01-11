@@ -1,6 +1,7 @@
 import window
 import configurations
 import adventure
+import solvers
 import utils
 import random
 import sys
@@ -10,12 +11,13 @@ from inspect import getmembers, isfunction
 #Tests
 ##
 
-def test_zuikis_vision2():
+
+def test_randomsolver():
     random.seed(0)
-    start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
-    story = adventure.Story(start)
-    story.get_vision().print_state()
-    wind = story.show()
+    start = configurations.TestFields.getTests()[0]
+    solver = solvers.RandomSolver(start)
+    solver.learn()
+    solver.solve()
 
 
 def test_zuikisstate():
@@ -143,4 +145,4 @@ class Testing:
 
 if __name__ == '__main__':
     test = Testing()
-    test.execute_by_input(default = 7)
+    test.execute_by_input(default = 4)

@@ -81,7 +81,7 @@ class Field:
 	}
 	dir_names = ('NN', 'NE', 'EE', 'SE', 'SS', 'SW', 'WW', 'NW')
 
-	def __init__(self, dims = None, zuikis = None, vilkai = None, carrots = None, carrotfactor = 0.9, carrotenergy = DEFAULT_DIMS[0]):
+	def __init__(self, dims = None, zuikis = None, vilkai = None, carrots = None, carrotfactor = 0.9, carrotenergy = 10):
 		if not dims: self.dims = DEFAULT_DIMS
 		else: self.dims = dims
 		if not zuikis: self.zuikis = [random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]
@@ -128,6 +128,7 @@ class TestFields:
 	@staticmethod
 	def getTests():
 		tests = []
+		tests.append(Field(zuikis=(7,7), vilkai=[(22,22)]))
 		tests.append(Field())
 		tests.append(Field(carrotenergy=15))
 		tests.append(Field(dims=(15,15), zuikis=[5, 7], vilkai=[[8, 7]], carrotenergy=10))

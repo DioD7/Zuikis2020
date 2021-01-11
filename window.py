@@ -6,7 +6,7 @@ import pygame
 from pygame.locals import *
 import tkinter as tk
 
-from entities import Zuikis, Vilkas, Morka
+from sprites import Zuikis, Vilkas, Morka
 
 ##
 #Path must be a list of game states. Each state describes the game completely i.e. it tells where every entity is on the grid.
