@@ -1,7 +1,13 @@
 from functools import wraps
 from time import perf_counter
 
+##
+#Utilities
+##
+
+
 def time_it(func):
+    """Wraps func such that it returns func result as well as calculation time"""
     @wraps(func)
     def wrapped(*args, **kwargs):
         start = perf_counter()
@@ -12,6 +18,7 @@ def time_it(func):
 
 
 def timer(f, prec = 4):
+    """Wraps f such that calculation time is printed after execution"""
     @wraps(f)
     def wrapped(*args, **kwargs):
         start_time = perf_counter()
@@ -23,11 +30,16 @@ def timer(f, prec = 4):
 
 
 class Timer():
+    """Timer class"""
     def __init__(self):
         self.time = perf_counter()
 
     def start(self):
+        """Starts timer"""
         self.time = perf_counter()
 
     def get_time(self):
-        return perf_counter()-self.time
+        """Returns time from the last inquiry into Timer and resets internal time"""
+        t = perf_counter()-self.time
+        self.time = perf_counter()
+        return t

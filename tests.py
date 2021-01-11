@@ -6,6 +6,9 @@ import random
 import sys
 from inspect import getmembers, isfunction
 
+##
+#Tests
+##
 
 def test_zuikis_vision2():
     random.seed(0)
@@ -16,10 +19,13 @@ def test_zuikis_vision2():
 
 
 def test_zuikisstate():
-    state1 = adventure.ZuikisState([(1,1),(24,5)],[(12,22),(7,9)],[-4, 0])
-    state2 = adventure.ZuikisState([ (24, 5),(1, 1)], [(12, 22), (7, 9)],[-4, 0])
-    d = {state1: 'One'}
-    print(state2 in d.keys())
+    random.seed(0)
+    start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
+    story = adventure.Story(start)
+    for i in range(25):
+        story.move('EE')
+        story.show_vision()
+    wind = story.show()
 
 
 def test_story():
@@ -45,7 +51,7 @@ def test_vision():
         energy = next_state[4]
         dirs = next_state[3]
         path.append(list(state) + [energy])
-    adventure.print_zuikis_state(act.rabbit_vision())
+
 
 
 def test_actions():
@@ -89,6 +95,7 @@ def test_path():
 
 
 class Testing:
+    """Class for automatic test handling"""
     def __init__(self):
         self.tests = [[obj, name] for name, obj in getmembers(sys.modules[__name__]) if isfunction(obj) and name.startswith('test')]
         self.breaker = '='*80
@@ -111,6 +118,7 @@ class Testing:
                 break
 
     def execute_by_input(self, default = None):
+        """Executes tests determined by user input"""
         print('FOUND',len(self.tests), 'TESTS:')
         for i in range(len(self.tests)):
             print(i+1, '. ', self.tests[i][1], sep='')
@@ -135,4 +143,4 @@ class Testing:
 
 if __name__ == '__main__':
     test = Testing()
-    test.execute_by_input(default = 6)
+    test.execute_by_input(default = 7)

@@ -18,15 +18,17 @@ elem = {
 	'zuikis': 1,
 	'carrot': 2,
 	'none': -1,
-	'vilkas': -2
+	'vilkas': -2,
+	'wall': -3
 }
 inv_elem =  {val: key for key, val in elem.items()}
 print_symbs = {
-	0: '_',
+	0: '-',
 	1: 'Z',
 	2: 'C',
-	-1: ' ',
+	-1: '  ',
 	-2: 'W',
+	-3: '|'
 }
 #Zuikis vision relative element coordinates in terms of y displacement
 zuikis_displacement = {
@@ -65,6 +67,7 @@ class Story:
 		else: self.path = []
 
 	def move(self, dir):
+		"""Moves zuikis to specified direction"""
 		if self.has_ended:
 			print('Warning: the story has ended for Zuikis.')
 		if isinstance(dir, str):
@@ -81,22 +84,30 @@ class Story:
 			self.path.append(next_step)
 
 	def is_over(self):
+		"""Check if story is over"""
 		return self.has_ended
 
 	def show(self, speed = 2):
+		"""Show story's path in the window"""
 		if self.record:
 			return window.Window(path=self.path, dim=self.dims, speed = speed)
 		else:
 			print('Warning: story has no record to show.')
 			return None
 
+	def show_vision(self):
+		self.action.rabbit_vision().show()
+
 	def get_vision(self):
+		"""Get zuikis vision state"""
 		return self.action.rabbit_vision()
 
 	def get_path(self):
+		"""Get story path"""
 		return self.path
 
 	def get_current_energy(self):
+		"""Get current energy in the zuikis story"""
 		return self.energy
 
 
@@ -275,26 +286,26 @@ class Actions:
 	
 	def rabbit_vision(self):
 		""" Rabbit's space of vision """
-		rabbit_vision = []
-		# for i in range(-self.manh_distance, self.manh_distance + 1):
-		# 	for j in range(-self.manh_distance, self.manh_distance + 1):
-		# 		if np.abs(i) + np.abs(j) > self.manh_distance: continue  # Discard cells outside the
-		# 									                             # Manhattan space
-		# 		x_vision = self.rabbit_place[0] + i
-		# 		y_vision = self.rabbit_place[1] + j
-		# 		# Boundary conditions
-		# 		if self.is_outside_boundaries(x_vision) or self.is_outside_boundaries(y_vision): continue
-		# 		rabbit_vision.append((x_vision, y_vision))
 		wolves = []
 		carrots = []
+		##Wolves
 		for w in self.wolf_places:
 			if Actions.manh_dist(self.rabbit_place, w) <= self.manh_distance:
 				wolves.append((w[0]-self.rabbit_place[0],w[1]-self.rabbit_place[1]))
+		##Carrots
 		for c in self.carrot_places:
 			if Actions.manh_dist(self.rabbit_place, c) <= self.manh_distance:
 				carrots.append((c[0]-self.rabbit_place[0],c[1]-self.rabbit_place[1]))
-		vision = ZuikisState(wolves, carrots, [0,0])
-
+		##Wall limits for x and y
+		if self.rabbit_place[0] +1 >= self.manh_distance and abs(self.rabbit_place[0] - self.dim +1) >= self.manh_distance:
+			x_lim = 0
+		else:
+			x_lim = min(self.rabbit_place[0]-self.manh_distance, self.dim - self.rabbit_place[0])
+		if self.rabbit_place[1] +1 >= self.manh_distance and abs(self.rabbit_place[1] - self.dim +1) >= self.manh_distance:
+			y_lim = 0
+		else:
+			y_lim = min(self.rabbit_place[1]-self.manh_distance, self.dim - self.rabbit_place[1])
+		vision = ZuikisState(wolves, carrots, [x_lim,y_lim])
 		return vision
 		
 	def wolf_vision(self, wolf_place, wolf_dir):
@@ -333,6 +344,7 @@ class Actions:
 
 
 class ZuikisState:
+	"""Zuikis state class"""
 
 	def __init__(self, wolves, carrots, walls):
 		self.wolves = frozenset(wolves)
@@ -347,20 +359,33 @@ class ZuikisState:
 		return self.hsh == other.hsh
 
 	def print_state(self):
+		"""Prints current state to console"""
 		print((self.wolves, self.carrots, self.walls))
 
 	def show(self):
-		pass
+		"""Shows current state in console"""
+		show_zuikis_state((self.wolves, self.carrots, self.walls))
 
 
-def print_zuikis_state(st):
+def show_zuikis_state(st):
 	"""Prints simple visualization of zuikis state into the console"""
-	indexes = [1, 3, 5, 7, 9, 7, 5, 3, 1]
-	current = 0
-	for i in indexes:
-		sides = (9 - i) // 2
-		print('  '*sides, end='')
-		for j in range(i):
-			print('{} '.format(print_symbs[st[current + j]]), end='')
-		print('  ' * sides)
-		current += i
+	wolves, carrots, walls = st
+	keys = sorted(zuikis_displacement.keys())
+	for i in keys:
+		sides = abs(i)
+		print(print_symbs[elem['none']]*sides, end='')
+		for j in range(9 - 2*sides):
+			point = (zuikis_displacement[abs(i)][j], i)
+			if point in wolves:
+				symbol = print_symbs[elem['vilkas']]
+			elif point in carrots:
+				symbol = print_symbs[elem['carrot']]
+			elif (0 < walls[0] <= point[0]) or (0 > walls[0] >= point[0]) or \
+					(0 < walls[1] <= point[1]) or (0 > walls[1] >= point[1]):
+				symbol = print_symbs[elem['wall']]
+			elif point == (0,0):
+				symbol = print_symbs[elem['zuikis']]
+			else:
+				symbol = print_symbs[elem['empty']]
+			print('{} '.format(symbol), end='')
+		print(print_symbs[elem['none']] * sides)
