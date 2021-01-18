@@ -33,6 +33,7 @@ class Timer():
     """Timer class"""
     def __init__(self):
         self.time = perf_counter()
+        self.init_time = self.time
 
     def start(self):
         """Starts timer"""
@@ -43,3 +44,6 @@ class Timer():
         t = perf_counter()-self.time
         self.time = perf_counter()
         return t
+
+    def get_total_time(self):
+        return perf_counter() - self.init_time

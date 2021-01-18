@@ -69,7 +69,7 @@ class Story:
 	def move(self, dir):
 		"""Moves zuikis to specified direction"""
 		if self.has_ended:
-			print('Warning: the story has ended for Zuikis.')
+			print('WARNING: the story has ended for Zuikis.')
 		if isinstance(dir, str):
 			dir = configurations.Field.dirs[dir]
 		self.dirs.append(dir)
@@ -113,9 +113,10 @@ class Story:
 
 class Actions:
 
-	def __init__(self, agent_places = None, dim=30, carrot_factor=0.9, carrot_energy=10, manh_distance=4):
+	def __init__(self, agent_places = None, dim=30, carrot_factor=0.9, carrot_energy=10, manh_distance=4, cost = 1):
 		if agent_places:
 			self.rabbit_place, self.wolf_places, self.carrot_places = copy.deepcopy(agent_places)
+		self.cost = cost
 		self.init_energy = dim ** 2
 		self.dim = dim
 		self.carrot_energy = carrot_energy
@@ -144,6 +145,7 @@ class Actions:
 		# Directions may be also encoded as coordinates, with an entity as the origin of the coordinate system
 		# with x axis pointing right and y axis pointing down
 		# E.g. the coordinates of cell 1 are (-1, -1), cell 2 - (0, -1), etc.
+		energy -= self.cost
 		self.move = {
 				1: (-1, -1),
 				2: (0, -1),
