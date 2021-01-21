@@ -13,11 +13,15 @@ from inspect import getmembers, isfunction
 ##
 
 
+def test_qsolver():
+    print('Q solver')
+
+
 def test_mdpsolver():
     random.seed(0)
     start = configurations.TestFields.getTests()[0]
     data = Data(verbose = False)
-    solver = solvers.MDPSolver(start, data = data,maxiter=100, maxstep=300, seed=0, nc = 10, sa = True)
+    solver = solvers.MDPSolver(start, data = data,maxiter=200, maxstep=900, seed=0, nc = 50, sa = False, usepolicy=True)
     solver.learn()
     solver.solve()
 
@@ -117,7 +121,14 @@ class Testing:
         print('FOUND',len(self.tests), 'TESTS:')
         for i in range(len(self.tests)):
             print(i+1, '. ', self.tests[i][1], sep='')
-        if default: num = default - 1
+        if default:
+            for t in self.tests:
+                if t[1] == default:
+                    num = self.tests.index(t)
+                    break
+            else:
+                print('Default test', default, 'not found')
+                exit(1)
         else:
             ans = input('Launch which test?')
             num = int(ans) - 1
@@ -139,4 +150,4 @@ class Testing:
 
 if __name__ == '__main__':
     test = Testing()
-    test.execute_by_input(default = 3)
+    test.execute_by_input(default = 'test_qsolver')

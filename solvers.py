@@ -58,7 +58,7 @@ class RandomSolver(Solver):
 class MDPSolver(Solver):
 
     """Simple MDP solver with different next state choosing options"""
-    def __init__(self, field, data = None, verbose = False, seed = None, maxiter = 1000, maxstep = 1000, chooser = 'epsilon', nc = 10, sa = False):
+    def __init__(self, field, data = None, verbose = False, seed = None, usepolicy = True, maxiter = 1000, maxstep = 1000, chooser = 'epsilon', cost = 1, nc = 10, sa = False):
         super(MDPSolver, self).__init__(field, data=data, verbose=verbose, seed=seed)
         self.current_state = self.story.get_vision()
         self.last_state = self.current_state
@@ -72,6 +72,7 @@ class MDPSolver(Solver):
         self.max_iter = maxiter #Together will have step * iter = 10**6 steps
         self.real_energy = 0
         self.reseted = True
+        self.on_carrot = False
         self.policy = None
         ##next state chooser selection
         if chooser == 'epsilon': self.chooser = self.epsilon_chooser
@@ -82,6 +83,9 @@ class MDPSolver(Solver):
         self.sa = sa #Is simulated annealing on or off.
         self.counter = 0
         self.counter_max = self.max_iter * self.max_step
+        self.carrot_gain = self.start.carrot_energy * self.start.carrot_factor
+        self.cost = cost
+        self.use_policy = usepolicy
 
     def learn(self):
         for i in range(self.max_iter):
@@ -93,6 +97,8 @@ class MDPSolver(Solver):
                 self.story.move(next_move)
                 new_energy = self.story.get_current_energy()
                 self.change = new_energy - self.energy
+                if self.change > 0: self.on_carrot = True
+                else: self.on_carrot = False
                 self.energy = new_energy
                 self.real_energy += self.change
                 ##Dealing with states
@@ -109,11 +115,13 @@ class MDPSolver(Solver):
                 self.TD()
                 if self.reseted: self.reseted = False
                 self.data.record(new_energy, self.real_energy, self.change, next_move, self.U)
-
+            if self.use_policy: self.policy = self.get_policy()
             self.story = adventure.Story(self.start, record=False)
             self.reseted = True
 
     def get_next_move(self, default = 1):
+        if self.use_policy and self.policy is not None and self.current_state in self.policy.keys():
+            return self.policy[self.current_state]
         nxt, prob = self.chooser()
         if nxt: return nxt
         next_move = default
@@ -162,7 +170,9 @@ class MDPSolver(Solver):
     def TD(self):
         """Performs temporal difference calculation for single transition"""
         if self.reseted: return
-        delta = self.change + self.gamma * self.U[self.current_state] - self.U[self.last_state]
+        if self.freqs[self.current_state] == 1 and self.on_carrot: effective_U = self.carrot_gain
+        else: effective_U = self.U[self.current_state]
+        delta = -self.cost + self.gamma * effective_U - self.U[self.last_state]
         self.U[self.last_state] += self.get_alpha(self.last_state) * delta
 
     @staticmethod
@@ -206,10 +216,10 @@ class MDPSolver(Solver):
         policy = dict()
         for state in self.U.keys():
             largest = -inf
-            for direction in self.visits[self.current_state].keys():
-                num = len(self.visits[self.current_state][direction])
-                for next_state in set(self.visits[self.current_state][direction]):
-                    util_average = self.U[self.current_state] * self.visits[self.current_state][direction].count(next_state) / num
+            for direction in self.visits[state].keys():
+                num = len(self.visits[state][direction])
+                for next_state in set(self.visits[state][direction]):
+                    util_average = self.U[next_state] * self.visits[next_state][direction].count(next_state) / num
                     if util_average > largest:
                         largest = util_average
                         policy[state] = direction

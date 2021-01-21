@@ -83,6 +83,15 @@ class Story:
 			next_step = (self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision())
 			self.path.append(next_step)
 
+	def potential_move(self, dir):
+		"""Potentially moves the zuikis to dir and returns potential zuikis state"""
+		if self.has_ended:
+			print('WARNING: the story has ended for Zuikis.')
+		if isinstance(dir, str):
+			dir = configurations.Field.dirs[dir]
+		state = self.action.interactions(self.places, dir, self.wolf_dirs, self.energy)
+		return self.action.rabbit_vision()
+
 	def is_over(self):
 		"""Check if story is over"""
 		return self.has_ended
@@ -122,6 +131,7 @@ class Actions:
 		self.carrot_energy = carrot_energy
 		self.manh_distance = manh_distance
 		self.carrot_factor = carrot_factor
+		self.can_get_carrot = False
 		
 	def is_goal(self):
 		""" Checks if adventure is finished """
@@ -176,6 +186,7 @@ class Actions:
 
 		for i, carrot_place in enumerate(self.carrot_places):
 			if self.rabbit_place == carrot_place:
+				self.can_get_carrot = True
 				self.energy += self.carrot_energy
 				self.eat_carrot(i)
 				self.add_carrot()
@@ -184,6 +195,7 @@ class Actions:
 				self.move_rabbit(next_rabbit_place)
 				path = (self.rabbit_place, self.wolf_places, self.carrot_places, self.wolf_dirs, self.energy, self.is_goal())
 				return path
+		else: self.can_get_carrot = False
 		# Wolf is moved first here
 		for j in range(len(self.wolf_places)):
 			self.move_wolf(j)
@@ -339,6 +351,8 @@ class Actions:
 		""" Check if the coordinate is outside the boundaries of the grid """
 		if coord < lower or coord > upper: return True
 		else: return False
+
+	def can_eat_carrot(self): return self.can_get_carrot
 
 	@staticmethod
 	def manh_dist(one, two):
