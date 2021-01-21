@@ -15,7 +15,11 @@ from inspect import getmembers, isfunction
 
 def test_qsolver():
     print('Q solver')
-
+    random.seed(0)
+    start = configurations.TestFields.getTests()[0]
+    data = Data(verbose=False)
+    solver = solvers.MDPSolver(start, data=data, maxiter=100, maxstep=100, seed=0)
+    solver.learn()
 
 def test_mdpsolver():
     random.seed(0)

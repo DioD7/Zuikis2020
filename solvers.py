@@ -225,22 +225,3 @@ class MDPSolver(Solver):
                         policy[state] = direction
 
         return policy
-
-
-class QSolver(Solver):
-    """Reinforcement learning Q solver"""
-    def __init__(self, field, data = True, verbose = False, seed = None):
-        super(QSolver, self).__init__(field, data=data, verbose=verbose, seed=seed)
-        self.freqs = Counter({self.story.get_vision():1})
-        self.Q = {self.story.get_vision():Counter()}
-
-    def learn(self):
-        pass
-
-    def solve(self):
-        while not self.story.has_ended:
-            self.story.move(random.randint(1, 8))
-        self.story.show()
-
-    def get_policy(self):
-        return None
