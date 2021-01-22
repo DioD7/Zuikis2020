@@ -2,6 +2,7 @@ import window
 import configurations
 import adventure
 import solvers
+import qsolver
 from data import Data
 import utils
 import random
@@ -17,9 +18,13 @@ def test_qsolver():
     print('Q solver')
     random.seed(0)
     start = configurations.TestFields.getTests()[0]
-    data = Data(verbose=False)
-    solver = solvers.MDPSolver(start, data=data, maxiter=100, maxstep=100, seed=0)
+    steps = 100
+    iter = 100
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha= 2, Ncut=2, Rplus=500)
     solver.learn()
+    solver.solve()
+    data.log()
 
 def test_mdpsolver():
     random.seed(0)

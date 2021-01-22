@@ -56,7 +56,6 @@ class RandomSolver(Solver):
 
 
 class MDPSolver(Solver):
-
     """Simple MDP solver with different next state choosing options"""
     def __init__(self, field, data = None, verbose = False, seed = None, usepolicy = True, maxiter = 1000, maxstep = 1000, chooser = 'epsilon', cost = 1, nc = 10, sa = False):
         super(MDPSolver, self).__init__(field, data=data, verbose=verbose, seed=seed)

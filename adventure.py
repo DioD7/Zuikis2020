@@ -155,7 +155,6 @@ class Actions:
 		# Directions may be also encoded as coordinates, with an entity as the origin of the coordinate system
 		# with x axis pointing right and y axis pointing down
 		# E.g. the coordinates of cell 1 are (-1, -1), cell 2 - (0, -1), etc.
-		energy -= self.cost
 		self.move = {
 				1: (-1, -1),
 				2: (0, -1),
@@ -168,7 +167,7 @@ class Actions:
 		}
 		
 		self.rabbit_place, self.wolf_places, self.carrot_places = copy.deepcopy(agent_places)
-		self.energy = energy
+		self.energy = energy - self.cost
 		self.wolf_dirs = wolf_dirs
 		next_rabbit_place = (self.rabbit_place[0] + self.move[rabbit_dir][0],
 				     self.rabbit_place[1] + self.move[rabbit_dir][1])
