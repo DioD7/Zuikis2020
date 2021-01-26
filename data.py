@@ -57,6 +57,10 @@ class Data:
                 print('Value: ', self.U[st])
                 print('*'*80)
         print('Carrots gathered:',self.carrots)
+        total_sum = 0
+        for st in self.freqs.keys():
+            total_sum += sum(self.freqs[st].values())
+        print('Total actions:',total_sum)
         print('Total time {:.4f} s'.format(self.timer.get_total_time()))
 
     def log(self):
@@ -74,6 +78,6 @@ class Data:
                 st.print_state()
                 st.show()
                 print('Value: ', self.U[st])
-                print(self.freqs[st])
+                print('Frequency', self.freqs[st])
                 print('='*80)
             sys.stdout = old_stdout

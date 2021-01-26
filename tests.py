@@ -7,12 +7,46 @@ from data import Data
 import utils
 import random
 import sys
+import cProfile
 from inspect import getmembers, isfunction
 
 ##
 #Tests
 ##
 
+
+def test_newaction():
+    print('Action2')
+    random.seed(0)
+    # start = configurations.TestFields.getTests()[0]
+    start = configurations.Field(dims = configurations.DEFAULT_DIMS, zuikis = (15, 15), vilkai=[(12, 12)], carrots=[(18, 15)])
+
+    dms = start.get_dims()
+    act = adventure.Actions2(start.get_places())
+    state = start.get_state()[0:-1]
+    energy = start.get_state()[-1]
+    dirs = [3]
+    path = [start.get_state()]
+    for i in range(25):
+        next_state = act.interactions(state, 4, dirs, energy)
+        state = next_state[0:3]
+        energy = next_state[4]
+        dirs = next_state[3]
+        path.append(list(state) + [energy])
+    zuikis_state = act.rabbit_vision()
+    zuikis_state.show()
+    wind = window.Window(path=path, dim=dms)
+
+
+def profile_qsolver():
+    print('Q profiler')
+    random.seed(0)
+    start = configurations.TestFields.getTests()[0]
+    steps = 1000
+    iter = 100
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha=2, Ncut=2, Rplus=500)
+    cProfile.runctx('solver.learn()',globals(),locals(), sort='time')
 
 def test_qsolver():
     print('Q solver')
@@ -105,7 +139,7 @@ def test_field():
 class Testing:
     """Class for automatic test handling"""
     def __init__(self):
-        self.tests = [[obj, name] for name, obj in getmembers(sys.modules[__name__]) if isfunction(obj) and name.startswith('test')]
+        self.tests = [[obj, name] for name, obj in getmembers(sys.modules[__name__]) if isfunction(obj) and (name.startswith('test') or name.startswith('profile'))]
         self.breaker = '='*80
         self.breaker2 = '*'*85
 
@@ -159,4 +193,4 @@ class Testing:
 
 if __name__ == '__main__':
     test = Testing()
-    test.execute_by_input(default = 'test_qsolver')
+    test.execute_by_input(default = 'test_newaction')

@@ -53,12 +53,12 @@ class QSolver(Solver):
                 self.current_state = self.story.get_vision()
                 new_energy = self.story.get_current_energy()
                 if s == 0:
-                    self.change = -1
+                    self.change = self.default_cost
                 else:
                     self.change = new_energy - self.energy
                 if self.change > 0:
                     self.carrots_gained += 1
-                    # self.change *= 1000
+                    # self.change *= 10
                 elif self.change < self.default_cost:
                     # self.change *= 100
                     pass
