@@ -87,8 +87,8 @@ class Field:
 		if not zuikis: self.zuikis = [random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]
 		else: self.zuikis = zuikis
 		if not vilkai:
-			self.nvilkai = 1
-			self.vilkai = [[random.randint(0, self.dims[0]-1), random.randint(0, self.dims[1]-1)]]
+			self.nvilkai = 0
+			self.vilkai = []
 		else:
 			self.nvilkai, self.vilkai = len(vilkai), vilkai
 		self.carrot_energy = carrotenergy

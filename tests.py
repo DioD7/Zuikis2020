@@ -15,6 +15,30 @@ from inspect import getmembers, isfunction
 ##
 
 
+def test_qsolver():
+    print('Q solver')
+    random.seed(0)
+    start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[], carrots=[(13,13)],carrotenergy=5)
+    steps = 1000
+    iter = 10000
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha= 5, Ncut=5, Rplus=225)
+    solver.learn()
+    solver.solve()
+    data.log()
+
+
+def profile_qsolver():
+    print('Q profiler')
+    random.seed(0)
+    start = configurations.TestFields.getTests()[0]
+    steps = 1000
+    iter = 100
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha=2, Ncut=2, Rplus=500)
+    cProfile.runctx('solver.learn()',globals(),locals(), sort='time')
+
+
 def test_newaction():
     print('Action2')
     random.seed(0)
@@ -38,32 +62,12 @@ def test_newaction():
     wind = window.Window(path=path, dim=dms)
 
 
-def profile_qsolver():
-    print('Q profiler')
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    steps = 1000
-    iter = 100
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha=2, Ncut=2, Rplus=500)
-    cProfile.runctx('solver.learn()',globals(),locals(), sort='time')
-
-def test_qsolver():
-    print('Q solver')
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    steps = 100
-    iter = 100
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha= 2, Ncut=2, Rplus=500)
-    solver.learn()
-    solver.solve()
-    data.log()
-
 def test_mdpsolver():
     random.seed(0)
     start = configurations.TestFields.getTests()[0]
-    data = Data(verbose = False)
+    iter = 200
+    steps = 900
+    data = Data(iter, steps, verbose = False)
     solver = solvers.MDPSolver(start, data = data,maxiter=200, maxstep=900, seed=0, nc = 50, sa = False, usepolicy=True)
     solver.learn()
     solver.solve()
@@ -190,7 +194,8 @@ class Testing:
     def sep2(self):
         print(self.breaker2)
 
+default_test = 'test_qsolver'
 
 if __name__ == '__main__':
     test = Testing()
-    test.execute_by_input(default = 'test_newaction')
+    test.execute_by_input(default = default_test)

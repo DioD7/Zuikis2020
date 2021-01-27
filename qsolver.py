@@ -75,12 +75,15 @@ class QSolver(Solver):
             self.current_state = self.last_state
             self.last_action = random.randint(1, 8)
 
+    def fnc(self,x):
+        return self.Q[self.current_state][x]
+
     def get_max_actionvalue(self, explor = False):
         vals = dict()
         if explor:
             func = self.f
         else:
-            func = lambda x: self.Q[self.current_state][x]
+            func = self.fnc
         for a in self.dirs:
             val = func(a)
             if val in vals.keys():

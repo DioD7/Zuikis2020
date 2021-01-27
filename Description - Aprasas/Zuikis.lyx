@@ -1,0 +1,733 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+% Dokumento autoriai Jevgenij Chmeliov ir Andrius Gelžinis, (c) 2018
+\usepackage{tocloft}
+\usepackage{indentfirst}
+\frenchspacing
+\usepackage{cite}
+\usepackage{upgreek}
+\usepackage{siunitx} % dydžių vienetams
+\sisetup{
+redefine-symbols = true,
+output-decimal-marker = {,},
+exponent-product = \cdot,
+inter-unit-product = \ensuremath{{}\cdot{}}}
+
+
+\usepackage[labelsep=space]{caption}
+\DeclareCaptionLabelFormat{pav}{#2~#1}
+\captionsetup[figure]{labelformat=pav, name=pav.}
+\captionsetup[table]{labelformat=pav, name=lentelė.}
+
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\gradient}{grad}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\rotor}{rot}
+\DeclareMathOperator{\trace}{Tr}
+
+\renewcommand{\headrulewidth}{0pt}
+\end_preamble
+\use_default_options true
+\begin_modules
+enumitem
+customHeadersFooters
+\end_modules
+\maintain_unincluded_children false
+\begin_local_layout
+Format 35
+Requires	amsthm,amsmath
+NoStyle Chapter
+NoCounter chapter
+NoStyle Chapter*
+NoStyle Paragraph
+NoStyle Subparagraph
+NoStyle Paragraph*
+NoStyle Subparagraph*
+NoStyle Quotation
+NoStyle Quote
+NoStyle Verse
+NoStyle Abstract
+NoStyle Address
+NoStyle "Right Address"
+\end_local_layout
+\language lithuanian
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "tgtermes" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "newtxmath" "auto"
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered true
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 2
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\pdf_quoted_options "pdfstartview=FitH, bookmarksopen=true, hidelinks=true,  pdfdisplaydoctitle=true, pdfpagemode=UseNone"
+\papersize a4paper
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 2
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 2cm
+\rightmargin 1.5cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style german
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle fancy
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\imath}{\mathrm{i}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\ddiff}{\mathrm{d}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\d}{\mathrm{d}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\vect}[1]{\mathbf{#1}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\oper}[1]{\hat{#1}}
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\emath}{\mathrm{e}}
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\ket}[1]{\left|#1\right\rangle }
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\bra}[1]{\left\langle #1\right|}
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\braket}[2]{\left\langle #1\middle|#2\right\rangle }
+{\left\langle #1|#2\right\rangle }
+\end_inset
+
+ 
+\begin_inset FormulaMacro
+\newcommand{\braketop}[3]{\left\langle #1\middle|#2\middle|#3\right\rangle }
+{\left\langle #1|#2|#3\right\rangle }
+\end_inset
+
+
+\begin_inset FormulaMacro
+\newcommand{\si}[2]{\SI{#1}{#2}}
+{\begin{subarray}{cc}
+#1 & \textrm{#2}\end{subarray}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Right Header
+
+\end_layout
+
+\begin_layout Left Header
+
+\end_layout
+
+\begin_layout Center Footer
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thepage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+normalfont
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+Vilniaus universitetas
+\begin_inset Newline newline
+\end_inset
+
+Fizikos fakultetas
+\begin_inset Newline newline
+\end_inset
+
+Dirbtinis Intelektas
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 3.5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+ZUIKIO KLAJONĖS
+\begin_inset VSpace 0.8cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset VSpace 0.8cm
+\end_inset
+
+Teorinė fizika ir astrofizika
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset VSpace 3.5cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align right
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="right" valignment="top">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Ruošė:
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Paulius Juodsnukis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Ieva Gugaitė
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset VSpace 4cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+VU FF 2021 01 27
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+normalfont
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Idiegimas
+\end_layout
+
+\begin_layout Standard
+Projektas naudoja dvi išorines Python bibleotekas: tkinter ir pygame.
+ Žiurėkite 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:lib table"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Pygame bibleotekoje naudojamas funkcionalumas kuris leidžia sujungti šių
+ dviejų bibleotekų veikimą viename lange.
+ Naujausiose pygame atnaujinimuose jis yra pašalintas, todėl naudojama truputi
+ senesnė 1.9.6 versija.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="left" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Bibleoteka
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Versija
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Komanda
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+tkinter
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+naujausia
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pip install tkinter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+pygame
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\leq1.9.6$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+pip install -Iv pygame==1.9.6
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:lib table"
+
+\end_inset
+
+Išorinės bibleotekos
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Programos struktūra
+\end_layout
+
+\begin_layout Standard
+Projektas sudarytas iš eilės Python failų:
+\end_layout
+
+\begin_layout Itemize
+adventure.py
+\end_layout
+
+\begin_layout Itemize
+configurations.py
+\end_layout
+
+\begin_layout Itemize
+data.py
+\end_layout
+
+\begin_layout Itemize
+program.py
+\end_layout
+
+\begin_layout Itemize
+qsolver.py
+\end_layout
+
+\begin_layout Itemize
+solvers.py
+\end_layout
+
+\begin_layout Itemize
+sprites.py
+\end_layout
+
+\begin_layout Itemize
+tests.py
+\end_layout
+
+\begin_layout Itemize
+utils.py
+\end_layout
+
+\begin_layout Itemize
+window.py
+\end_layout
+
+\begin_layout Standard
+Ir dvieju direktorijų:
+\end_layout
+
+\begin_layout Itemize
+pics
+\end_layout
+
+\begin_layout Itemize
+logs
+\end_layout
+
+\begin_layout Standard
+Pirmojoje saugomi mūsų veikėjų: zuikio, vilkio ir morkos paveikslai reikalingi
+ atvaizduojant zuikio klajonę.
+ Antrajame generuojami ir saugomi log failai skirti išsaugoti ir tyrinėti
+ zuikio išmoktas būsenas ir jų perėjimus.
+\end_layout
+
+\begin_layout Subsection
+Paleidimas
+\end_layout
+
+\begin_layout Standard
+
+\color red
+Kolkas
+\color inherit
+ pagrindinis Python failas yra 
+\color red
+tests.py
+\color inherit
+.
+ Jame parašyti testai leidžia bandyti ir testuoti įvairius programos aspektus,
+ įskaitant ir pati zuikio mokymais ir jo klajones.
+\end_layout
+
+\begin_layout Standard
+Paleidus šį failą pasileis viena iš dvieju rutinų: nurodytasis testas arba
+ testų/profiliavimo pasirinkimas.
+ Kad pasileistų pirmasis varijantas, numatytasis testas turi buti nurodytas
+ leidžiant testavimo subrutiną kintamajame:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+default_test
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Jei jis nenurodytas(yra None) tada pasileis testų meniu.
+\end_layout
+
+\begin_layout Standard
+
+\color red
+Šiuo laiko momentu dalis testų tikriausia neveikia ir keli tikrai neveikia.
+ Tačiau tikrai veikia paskutinis testas:
+\end_layout
+
+\begin_layout Standard
+
+\color red
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+\color red
+test_qsolver
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

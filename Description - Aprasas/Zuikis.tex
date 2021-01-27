@@ -1,0 +1,227 @@
+%% LyX 2.3.5.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{tgtermes}
+\usepackage{newtxmath}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1,L7x]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=3cm,rmargin=1.5cm}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{color}
+\usepackage[lithuanian]{babel}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview=FitH, bookmarksopen=true, hidelinks=true,  pdfdisplaydoctitle=true, pdfpagemode=UseNone}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newlength{\lyxlabelwidth}      % auxiliary length 
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% Dokumento autoriai Jevgenij Chmeliov ir Andrius Gelžinis, (c) 2018
+\usepackage{tocloft}
+\usepackage{indentfirst}
+\frenchspacing
+\usepackage{cite}
+\usepackage{upgreek}
+\usepackage{siunitx} % dydžių vienetams
+\sisetup{
+redefine-symbols = true,
+output-decimal-marker = {,},
+exponent-product = \cdot,
+inter-unit-product = \ensuremath{{}\cdot{}}}
+
+
+\usepackage[labelsep=space]{caption}
+\DeclareCaptionLabelFormat{pav}{#2~#1}
+\captionsetup[figure]{labelformat=pav, name=pav.}
+\captionsetup[table]{labelformat=pav, name=lentelė.}
+
+\DeclareMathOperator{\Real}{Re}
+\DeclareMathOperator{\Imag}{Im}
+\DeclareMathOperator{\gradient}{grad}
+\DeclareMathOperator{\divergence}{div}
+\DeclareMathOperator{\rotor}{rot}
+\DeclareMathOperator{\trace}{Tr}
+
+\renewcommand{\headrulewidth}{0pt}
+
+\makeatother
+
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin7}Listing}
+
+\begin{document}
+\global\long\def\imath{\mathrm{i}}%
+ 
+\global\long\def\ddiff{\mathrm{d}}%
+ 
+\global\long\def\d{\mathrm{d}}%
+ 
+\global\long\def\vect#1{\mathbf{#1}}%
+ 
+\global\long\def\oper#1{\hat{#1}}%
+ 
+\global\long\def\emath{\mathrm{e}}%
+ 
+
+\global\long\def\ket#1{\left|#1\right\rangle }%
+\global\long\def\bra#1{\left\langle #1\right|}%
+\global\long\def\braket#1#2{\left\langle #1\middle|#2\right\rangle }%
+ 
+\global\long\def\braketop#1#2#3{\left\langle #1\middle|#2\middle|#3\right\rangle }%
+\global\long\def\si#1#2{\SI{#1}{#2}}%
+
+
+\rhead{}
+
+\lhead{}
+
+\cfoot{\thepage}
+
+\normalfont
+
+\thispagestyle{empty}
+\begin{center}
+Vilniaus universitetas\\
+Fizikos fakultetas\\
+Dirbtinis Intelektas
+\par\end{center}
+
+\vspace{3.5cm}
+
+\begin{center}
+ZUIKIO KLAJONĖS\vspace{0.8cm}
+\par\end{center}
+
+\begin{center}
+\vspace{0.8cm}
+Teorinė fizika ir astrofizika
+\par\end{center}
+
+\begin{center}
+\vspace{3.5cm}
+\par\end{center}
+
+\begin{flushright}
+\begin{tabular}{cr}
+Ruošė: & Paulius Juodsnukis\tabularnewline
+ & Ieva Gugaitė\tabularnewline
+\end{tabular}
+\par\end{flushright}
+
+\begin{center}
+\vspace{4cm}
+\par\end{center}
+
+\begin{center}
+VU FF 2021 01 27
+\par\end{center}
+
+\newpage{}
+
+\normalfont\tableofcontents{}
+
+\newpage{}
+
+\section{Idiegimas}
+
+Projektas naudoja dvi išorines Python bibleotekas: tkinter ir pygame.
+Žiurėkite \ref{tab:lib table}. Pygame bibleotekoje naudojamas funkcionalumas
+kuris leidžia sujungti šių dviejų bibleotekų veikimą viename lange.
+Naujausiose pygame atnaujinimuose jis yra pašalintas, todėl naudojama
+truputi senesnė 1.9.6 versija.
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{|c|c|l|}
+\hline 
+Bibleoteka & Versija & Komanda\tabularnewline
+\hline 
+tkinter & naujausia & \inputencoding{latin7}
+\begin{lstlisting}
+pip install tkinter
+\end{lstlisting}
+\inputencoding{utf8}\tabularnewline
+\hline 
+pygame & $\leq1.9.6$ & \inputencoding{latin7}
+\begin{lstlisting}
+pip install -Iv pygame==1.9.6
+\end{lstlisting}
+\inputencoding{utf8}\tabularnewline
+\hline 
+\end{tabular}
+\par\end{centering}
+\caption{\label{tab:lib table}Išorinės bibleotekos}
+\end{table}
+
+
+\section{Programos struktūra}
+
+Projektas sudarytas iš eilės Python failų:
+\begin{itemize}
+\item adventure.py
+\item configurations.py
+\item data.py
+\item program.py
+\item qsolver.py
+\item solvers.py
+\item sprites.py
+\item tests.py
+\item utils.py
+\item window.py
+\end{itemize}
+Ir dvieju direktorijų:
+\begin{itemize}
+\item pics
+\item logs
+\end{itemize}
+Pirmojoje saugomi mūsų veikėjų: zuikio, vilkio ir morkos paveikslai
+reikalingi atvaizduojant zuikio klajonę. Antrajame generuojami ir
+saugomi log failai skirti išsaugoti ir tyrinėti zuikio išmoktas būsenas
+ir jų perėjimus.
+
+\subsection{Paleidimas}
+
+\textcolor{red}{Kolkas} pagrindinis Python failas yra \textcolor{red}{tests.py}.
+Jame parašyti testai leidžia bandyti ir testuoti įvairius programos
+aspektus, įskaitant ir pati zuikio mokymais ir jo klajones.
+
+Paleidus šį failą pasileis viena iš dvieju rutinų: nurodytasis testas
+arba testų/profiliavimo pasirinkimas. Kad pasileistų pirmasis varijantas,
+numatytasis testas turi buti nurodytas leidžiant testavimo subrutiną
+kintamajame:\inputencoding{latin7}
+\begin{lstlisting}
+default_test
+\end{lstlisting}
+\inputencoding{utf8}
+Jei jis nenurodytas(yra None) tada pasileis testų meniu.
+
+\textcolor{red}{Šiuo laiko momentu dalis testų tikriausia neveikia
+ir keli tikrai neveikia. Tačiau tikrai veikia paskutinis testas:}
+
+\textcolor{red}{}\inputencoding{latin7}
+\begin{lstlisting}
+test_qsolver
+\end{lstlisting}
+\inputencoding{utf8}
+\clearpage
+\end{document}

@@ -9,7 +9,7 @@ import pathlib
 
 class Data:
     """Class for data collection and its applications"""
-    def __init__(self, iter, steps, verbose = False, verboseinterval = 100, time = True, printU = False, printstates = False, name='Solver'):
+    def __init__(self, iter, steps, verbose = False, verboseinterval = 100, time = True, printU = True, printstates = False, name='Solver'):
         self.iter, self.steps = iter, steps
         self.verbose = verbose
         self.verbose_interval = verboseinterval
@@ -50,12 +50,6 @@ class Data:
         print('States detected:', len(self.U.keys()))
         if self.policy:
             print('Policy values:', self.policy.values())
-        if self.print_states:
-            for st in self.U.keys():
-                st.print_state()
-                st.show()
-                print('Value: ', self.U[st])
-                print('*'*80)
         print('Carrots gathered:',self.carrots)
         total_sum = 0
         for st in self.freqs.keys():
