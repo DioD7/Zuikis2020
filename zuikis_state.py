@@ -41,7 +41,7 @@ class ZuikisState:
 	def parse(self):
 		"""Parses the state based on what zuikis sees in self.tpl"""
 		#First parse what type it is
-		self.type = (len(self.wolves), len(self.carrots), len(self.walls))
+		self.type = (len(self.wolves), len(self.carrots), sum([1 for w in self.walls if w != 0]))
 		self.parse_entities()
 		##Sees nothing
 		if sum(self.type) == 0:
@@ -73,7 +73,7 @@ class ZuikisState:
 			if 1 <= direction <= 8:
 				return direction
 			elif direction == 9:
-				random.sample(self.directions, 1)[0]
+				return random.sample(self.directions, 1)[0]
 		elif self.type[1] >= 1 and self.type[0] == 0 and self.type[2] == 0:
 			ordered = self.get_closest_carrots()
 			return ordered[direction][0]

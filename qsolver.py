@@ -14,122 +14,101 @@ import random
 class QSolver(Solver):
     """Reinforcement learning Q solver"""
     def __init__(self, field, data = None, maxiter = 100, maxstep = 100, verbose = False, seed = None, gamma = 1, \
-                 Rplus = 10, Ncut = 10, Nalpha = 10, defaultcost = -1):
+                 Rplus = 10, Ncut = 5, Nmin = 5, defaultcost = -1):
         super(QSolver, self).__init__(field, data=data, verbose=verbose, seed=seed)
-        self.current_state = self.story.get_vision()
-        self.last_state = self.current_state
-        self.last_action = random.randint(1, 8)
-        self.gamma = gamma
-        self.R_plus = Rplus
-        self.N_cut = Ncut
-        self.N_alpha = Nalpha
-        self.default_cost = -1
-        self.freqs = {self.current_state:Counter()}
-        self.Q = {self.current_state:Counter()}
-        self.max_iter, self.max_step = maxiter, maxstep
-
-        self.dirs = configurations.Field.dirs.values()
-        self.counter = 0
-        self.energy = self.story.get_current_energy()
-        self.real_energy = 0
-        self.change = -1
-        self.carrots_gained  = 0
+        self.current_state, self.last_state = None, None
+        self.last_action = None
+        self.freqs = dict()
+        self.Q = dict()
+        self.energy = 0
         self.policy = None
 
+        self.max_iter, self.max_step = maxiter, maxstep
+        self.gamma = gamma
+        self.n_cut, self.n_min, self.r_plus = Ncut, Nmin, Rplus
+
+
     def learn(self):
+        """Learn Q function"""
+        #Perform max_iter number of episodes
         for i in range(self.max_iter):
-            for s in range(self.max_step):
-                #After first move
-                self.freqs[self.last_state][self.last_action] += 1
-                action, largest = self.get_max_actionvalue()
-                delta = self.change + self.gamma * largest - self.Q[self.last_state][self.last_action]
-                self.Q[self.last_state][self.last_action] += self.get_alpha() * delta
-                #Next move
-                next_move, largest = self.get_max_actionvalue(explor=True)
-                self.last_state = self.current_state
-                self.story.move(self.current_state.get_real_move(next_move))
-                if self.story.has_ended: break
-                self.last_action = next_move
-                self.current_state = self.story.get_vision()
-                new_energy = self.story.get_current_energy()
-                if s == 0:
-                    self.change = self.default_cost
-                else:
-                    self.change = new_energy - self.energy
-                if self.change > 0:
-                    self.carrots_gained += 1
-                    # self.change *= 10
-                elif self.change < self.default_cost:
-                    # self.change *= 100
-                    pass
-                self.energy = new_energy
-                self.real_energy += self.change
-                #Last things
-                #Fill new states in freqs and Q
-                if self.current_state not in self.freqs.keys():
-                    self.freqs[self.current_state] = Counter()
-                    self.Q[self.current_state] = self.current_state.get_empty_dirs()
-                #Record data for use
-                self.data.record(new_energy, self.real_energy, self.change, next_move, self.Q)
-                self.counter += 1
+            #Create new story and get its state
             self.story = adventure.Story(self.start, record=False)
-            self.last_state = self.story.get_vision()
-            self.current_state = self.last_state
-            self.last_action = random.randint(1, 8)
+            self.energy = self.story.get_current_energy()
+            self.current_state = self.story.get_vision()
+            #Fill the state in memory. Current state must always be defined in memory.
+            if self.current_state not in self.freqs.keys():
+                self.freqs[self.current_state] = self.current_state.get_empty_dirs()
+                self.Q[self.current_state] = self.current_state.get_empty_dirs()
+            #Perform a single episode
+            for s in range(self.max_step):
+                #Find best next move value from current state
+                next_move = self.get_max_actionvalue()
+                self.last_state = self.current_state
+                self.story.move(self.last_state.get_real_move(next_move))
+                self.current_state = self.story.get_vision()
+                #check, fill and update memory:
+                self.freqs[self.last_state][next_move] += 1
+                if self.current_state not in self.freqs.keys():
+                    self.freqs[self.current_state] = self.current_state.get_empty_dirs()
+                    self.Q[self.current_state] = self.current_state.get_empty_dirs()
+                #Update Q of the previous state
+                R = self.story.get_current_energy() - self.energy
+                self.energy = self.story.get_current_energy()
+                delta_Q = R + self.gamma * max(self.Q[self.current_state].values()) - self.Q[self.last_state][next_move]
+                self.Q[self.last_state][next_move] += self.get_alpha(self.last_state, next_move) * delta_Q
+                if self.story.is_over(): break
+            self.data.record(self.energy, 0, 0, next_move, self.Q)
 
-    def fnc(self,x):
-        return self.Q[self.current_state][x]
-
-    def get_max_actionvalue(self, explor = False):
-        vals = dict()
-        if explor:
-            func = self.f
-        else:
-            func = self.fnc
-        actions = self.current_state.get_dirs()
-        for a in actions:
-            val = func(a)
-            if val in vals.keys():
-                vals[val].append(a)
-            else:
-                vals[val] = [a]
-        max_val = max(vals.keys())
-        return random.sample(vals[max_val], 1)[0], max_val
 
     def f(self, action):
-        """Exploration function f"""
-        if self.freqs[self.current_state][action] >= self.N_cut:
-            return self.Q[self.current_state][action]
-        else: return self.R_plus
+        """Exploration function f based on action from current state"""
+        if self.freqs[self.current_state][action] <= self.n_min: return self.r_plus
+        else: return self.Q[self.current_state][action]
 
-    def get_alpha(self):
-        return self.N_alpha / (self.N_alpha - 1 + self.freqs[self.last_state][self.last_action])
+    def get_max_actionvalue(self, explor = False):
+        """Find best action from current state"""
+        if explor: func = self.f
+        else: func = lambda x: self.Q[self.current_state][x]
+        #Maximum
+        values = dict()
+        for direction in self.Q[self.current_state].keys():
+            single_value = func(direction)
+            #Put in value database
+            if single_value in values.keys():
+                values[single_value].append(direction)
+            else:
+                values[single_value] = [direction]
+        max_value = max(values.keys())
+        return random.sample(values[max_value],1)[0]
+
+    def get_alpha(self, state, action):
+        return self.n_cut / (self.n_cut - 1 + self.freqs[state][action])
 
     def solve(self):
+        self.data.record_freqs(self.freqs)
         self.policy = self.get_policy()
         self.data.record_policy(self.policy)
-        self.data.record_carrots(self.carrots_gained)
-        self.data.record_freqs(self.freqs)
-        self.data.end()
         self.story = adventure.Story(self.start, record=True)
         while not self.story.is_over():
             state = self.story.get_vision()
-            if state not in self.policy.keys(): move = random.randint(1, 8)
-            else: move = self.policy[state]
-            self.story.move(state.get_real_move(move))
+            if state in self.policy.keys():
+                self.story.move(state.get_real_move(self.policy[state]))
+            else:
+                self.story.move(7)
+        self.data.end()
         self.story.show()
-
 
     def get_policy(self):
         policy = dict()
-        for st in self.Q.keys():
-            largest = -inf
-            action = -1
-            for act in self.Q[st].keys():
-                if self.Q[st][act] > largest:
-                    largest = self.Q[st][act]
-                    action = act
-            if action > 0:
-                policy[st] = action
-            else: policy[st] = random.randint(1, 8)
+        for state in self.Q.keys():
+            values = dict()
+            for direction in self.Q[state].keys():
+                single_value = self.Q[state][direction]
+                if single_value in values.keys():
+                    values[single_value].append(direction)
+                else:
+                    values[single_value] = [direction]
+            max_value = max(values.keys())
+            policy[state] = random.sample(values[max_value],1)[0]
         return policy

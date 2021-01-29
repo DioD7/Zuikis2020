@@ -14,14 +14,14 @@ from math import inf, exp
 
 class Solver:
     """General interface for a solver"""
-    def __init__(self, field, data = None, verbose = False, record = False, seed = 0):
+    def __init__(self, field, data = None, verbose = False, seed = 0):
         if not field: self.start = configurations.TestFields.getTests()[0]
         else: self.start = field
         if not data: self.data = Data(verbose = True)
         else: self.data = data
         self.verbose = verbose
-        self.story = adventure.Story(self.start, record=record)
-        self.energy = self.story.get_current_energy()
+        self.story = None
+        self.energy = 0
         self.change = 0
         random.seed(seed)
 

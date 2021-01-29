@@ -15,27 +15,29 @@ from inspect import getmembers, isfunction
 ##
 
 
-def test_newzuikisstate():
-    print('New ZuikisState')
-    start = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrots=[(3, 2),(0, 2),(2, 5)], carrotenergy=5)
-    act = adventure.Actions2(start.get_places())
-    state = act.rabbit_vision()
-    print(state.get_closest_carrots())
-    print(state.signature[2])
-    print(state.get_real_move(0))
-
-
 def test_qsolver():
     print('Q solver')
     random.seed(0)
     start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[], carrots=[(13,13)],carrotenergy=5)
-    steps = 1000
-    iter = 100
+    steps = 100
+    iter = 30
     data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha= 5, Ncut=5, Rplus=225)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=5, Rplus=256)
     solver.learn()
     solver.solve()
     data.log()
+
+
+def test_newzuikisstate():
+    print('New ZuikisState')
+    start = configurations.Field(dims=(30, 30), zuikis=(15, 15), vilkai=[], carrots=[(14,14), (17,17)], carrotenergy=5)
+    act = adventure.Actions2(start.get_places())
+    state = act.rabbit_vision()
+    state.show()
+    print('Type is',state.type)
+    print('wolves, carrots, walls',state.wolves, state.carrots, state.walls)
+    print('Empty dirs',state.get_empty_dirs())
+    print('Dirs', state.get_dirs())
 
 
 def profile_qsolver():
