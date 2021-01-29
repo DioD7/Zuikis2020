@@ -15,12 +15,22 @@ from inspect import getmembers, isfunction
 ##
 
 
+def test_newzuikisstate():
+    print('New ZuikisState')
+    start = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrots=[(3, 2),(0, 2),(2, 5)], carrotenergy=5)
+    act = adventure.Actions2(start.get_places())
+    state = act.rabbit_vision()
+    print(state.get_closest_carrots())
+    print(state.signature[2])
+    print(state.get_real_move(0))
+
+
 def test_qsolver():
     print('Q solver')
     random.seed(0)
     start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[], carrots=[(13,13)],carrotenergy=5)
     steps = 1000
-    iter = 10000
+    iter = 100
     data = Data(iter, steps, verbose=False, printU=True, printstates=True)
     solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha= 5, Ncut=5, Rplus=225)
     solver.learn()
@@ -62,15 +72,15 @@ def test_newaction():
     wind = window.Window(path=path, dim=dms)
 
 
-def test_mdpsolver():
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    iter = 200
-    steps = 900
-    data = Data(iter, steps, verbose = False)
-    solver = solvers.MDPSolver(start, data = data,maxiter=200, maxstep=900, seed=0, nc = 50, sa = False, usepolicy=True)
-    solver.learn()
-    solver.solve()
+# def test_mdpsolver():
+#     random.seed(0)
+#     start = configurations.TestFields.getTests()[0]
+#     iter = 200
+#     steps = 900
+#     data = Data(iter, steps, verbose = False)
+#     solver = solvers.MDPSolver(start, data = data,maxiter=200, maxstep=900, seed=0, nc = 50, sa = False, usepolicy=True)
+#     solver.learn()
+#     solver.solve()
 
 
 def test_randomsolver():

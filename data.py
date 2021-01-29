@@ -2,7 +2,6 @@ import utils
 import datetime
 import sys
 import os
-import pathlib
 ##
 # File for data gathering/verbose/analysis
 ##

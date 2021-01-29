@@ -5,6 +5,7 @@ import random
 import copy
 
 from configurations import generate_carrots
+from zuikis_state import show_zuikis_state, ZuikisState
 import window
 
 ####
@@ -522,49 +523,3 @@ class Actions:
 		return abs(two[0] - one[0]) +abs(two[1] - one[1])
 
 
-class ZuikisState:
-	"""Zuikis state class"""
-
-	def __init__(self, wolves, carrots, walls):
-		self.wolves = frozenset(wolves)
-		self.carrots = frozenset(carrots)
-		self.walls = tuple(walls)
-		self.hsh = hash((self.wolves, self.carrots, self.walls))
-
-	def __hash__(self):
-		return self.hsh
-
-	def __eq__(self, other):
-		return self.hsh == other.hsh
-
-	def print_state(self):
-		"""Prints current state to console"""
-		print((self.wolves, self.carrots, self.walls))
-
-	def show(self):
-		"""Shows current state in console"""
-		show_zuikis_state((self.wolves, self.carrots, self.walls))
-
-
-def show_zuikis_state(st):
-	"""Prints simple visualization of zuikis state into the console"""
-	wolves, carrots, walls = st
-	keys = sorted(zuikis_displacement.keys())
-	for i in keys:
-		sides = abs(i)
-		print(print_symbs[elem['none']]*sides, end='')
-		for j in range(9 - 2*sides):
-			point = (zuikis_displacement[abs(i)][j], i)
-			if point in wolves:
-				symbol = print_symbs[elem['vilkas']]
-			elif point in carrots:
-				symbol = print_symbs[elem['carrot']]
-			elif (0 < walls[0] <= point[0]) or (0 > walls[0] >= point[0]) or \
-					(0 < walls[1] <= point[1]) or (0 > walls[1] >= point[1]):
-				symbol = print_symbs[elem['wall']]
-			elif point == (0,0):
-				symbol = print_symbs[elem['zuikis']]
-			else:
-				symbol = print_symbs[elem['empty']]
-			print('{} '.format(symbol), end='')
-		print(print_symbs[elem['none']] * sides)

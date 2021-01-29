@@ -47,7 +47,7 @@ class QSolver(Solver):
                 #Next move
                 next_move, largest = self.get_max_actionvalue(explor=True)
                 self.last_state = self.current_state
-                self.story.move(next_move)
+                self.story.move(self.current_state.get_real_move(next_move))
                 if self.story.has_ended: break
                 self.last_action = next_move
                 self.current_state = self.story.get_vision()
@@ -65,9 +65,11 @@ class QSolver(Solver):
                 self.energy = new_energy
                 self.real_energy += self.change
                 #Last things
+                #Fill new states in freqs and Q
                 if self.current_state not in self.freqs.keys():
                     self.freqs[self.current_state] = Counter()
-                    self.Q[self.current_state] = Counter()
+                    self.Q[self.current_state] = self.current_state.get_empty_dirs()
+                #Record data for use
                 self.data.record(new_energy, self.real_energy, self.change, next_move, self.Q)
                 self.counter += 1
             self.story = adventure.Story(self.start, record=False)
@@ -84,7 +86,8 @@ class QSolver(Solver):
             func = self.f
         else:
             func = self.fnc
-        for a in self.dirs:
+        actions = self.current_state.get_dirs()
+        for a in actions:
             val = func(a)
             if val in vals.keys():
                 vals[val].append(a)
@@ -113,7 +116,7 @@ class QSolver(Solver):
             state = self.story.get_vision()
             if state not in self.policy.keys(): move = random.randint(1, 8)
             else: move = self.policy[state]
-            self.story.move(move)
+            self.story.move(state.get_real_move(move))
         self.story.show()
 
 
