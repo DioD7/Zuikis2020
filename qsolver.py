@@ -36,12 +36,16 @@ class QSolver(Solver):
             self.story = adventure.Story(self.start, record=False)
             self.energy = self.story.get_current_energy()
             self.current_state = self.story.get_vision()
+            self.data.start_new_episode(self.current_state, self.energy, self.Q, self.freqs)
             #Fill the state in memory. Current state must always be defined in memory.
             if self.current_state not in self.freqs.keys():
                 self.freqs[self.current_state] = self.current_state.get_empty_dirs()
                 self.Q[self.current_state] = self.current_state.get_empty_dirs()
             #Perform a single episode
             for s in range(self.max_step):
+                if self.story.has_eaten():
+                    eat = True
+                else: eat = False
                 #Find best next move value from current state
                 next_move = self.get_max_actionvalue()
                 self.last_state = self.current_state
@@ -54,11 +58,15 @@ class QSolver(Solver):
                     self.Q[self.current_state] = self.current_state.get_empty_dirs()
                 #Update Q of the previous state
                 R = self.story.get_current_energy() - self.energy
+                # if R > 0: R = 500
                 self.energy = self.story.get_current_energy()
                 delta_Q = R + self.gamma * max(self.Q[self.current_state].values()) - self.Q[self.last_state][next_move]
+                # if eat:
+                #     print('delta',delta_Q)
+                #     print('alpha', self.get_alpha(self.last_state, next_move))
                 self.Q[self.last_state][next_move] += self.get_alpha(self.last_state, next_move) * delta_Q
+                self.data.record_step(self.current_state, self.energy, self.Q, self.freqs)
                 if self.story.is_over(): break
-            self.data.record(self.energy, 0, 0, next_move, self.Q)
 
 
     def f(self, action):
@@ -87,6 +95,7 @@ class QSolver(Solver):
 
     def solve(self):
         self.data.record_freqs(self.freqs)
+        self.data.record_Q(self.Q)
         self.policy = self.get_policy()
         self.data.record_policy(self.policy)
         self.story = adventure.Story(self.start, record=True)
@@ -95,9 +104,10 @@ class QSolver(Solver):
             if state in self.policy.keys():
                 self.story.move(state.get_real_move(self.policy[state]))
             else:
-                self.story.move(7)
+                print('WARNING. Unknown state detected. Exiting.')
+                exit(1)
         self.data.end()
-        self.story.show()
+        return self.story.get_path()
 
     def get_policy(self):
         policy = dict()

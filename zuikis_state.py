@@ -49,7 +49,7 @@ class ZuikisState:
 			self.hsh = hash(self.type)
 		##Sees only carrots
 		elif self.type[1] > 0 and self.type[0] == 0 and self.type[2] == 0:
-			self.dirs = [i for i in range(self.type[1])]
+			self.dirs = [i for i in range(len(self.carrot_dirs))]
 			self.hsh = hash(self.type)
 		##All other scenarios. With wolfs and walls you need to keep track both direction and distance
 		else:
@@ -64,9 +64,10 @@ class ZuikisState:
 				dirr = self.get_closest_dir(ent)
 				out_list[i].append((dirr, dist))
 		self.wolf_dirs = frozenset(self.wolf_dirs)
-		self.carrot_dirs = frozenset(self.carrot_dirs)
+		self.carrot_dirs = tuple(self.carrot_dirs)
 		self.wall_dirs = frozenset(self.walls)
 		self.signature = tuple([self.wolf_dirs, self.carrot_dirs, self.wall_dirs])
+
 
 	def get_real_move(self, direction):
 		if sum(self.type) == 0:
@@ -99,6 +100,21 @@ class ZuikisState:
 
 	def get_dirs(self):
 		return self.dirs
+
+	def get_type(self):
+		return self.type
+
+	def get_type_string(self):
+		if sum(self.type) == 0:
+			return 'Empty'
+		elif self.type[1] >= 1 and self.type[0] == 0 and self.type[2] == 0:
+			return 'Carrots'
+		else:
+			return 'Mixed'
+
+	def get_state(self):
+		"""Returns a tuple of this state"""
+		return self.tpl
 
 	def print_state(self):
 		"""Prints current state to console"""

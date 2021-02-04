@@ -57,7 +57,7 @@ def generate_carrots_fromuniform(dims, dist, n_carrots):
 	return carrots, n_carrots
 
 
-def generate_carrots(dims, dist, n_carrots = None):
+def generate_carrots(dims, dist, n_carrots = 1):
 	# return generate_carrots_fromdensity(dims, dist, n_carrots)
 	return generate_carrots_fromuniform(dims, dist, n_carrots)
 

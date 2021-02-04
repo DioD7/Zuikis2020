@@ -5,6 +5,7 @@ import platform
 import pygame
 from pygame.locals import *
 import tkinter as tk
+from PIL import ImageTk, Image
 
 from sprites import Zuikis, Vilkas, Morka
 
@@ -22,10 +23,15 @@ from sprites import Zuikis, Vilkas, Morka
 
 class Window:
     def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1):
+        ##GUI STUFF
         self.guilen = 250
+        self.state_padding = 2
+        self.state_line_width = 1
+        self.state_icon_dim = (self.guilen - 2 * self.state_padding - 7 * self.state_line_width) // 8
+        self.state_dim = 8 * self.state_icon_dim + self.state_padding * 2 + self.state_line_width * 7
+        ## More GUI stuff
         self.path = path
         self.root = tk.Tk() #Main window
-        # self.root.iconbitmap('pics/zuikis_con.ico') #Window icon of cool Zuikis. Seems to be slowing launch of the window a lot. Somehow.
         self.root.title('Zuikis adventures') #Name of the window
         self.field = FieldState(field=dim, square=squaredim, nwolves=len(path[0][1]), ncarrots=len(path[0][2])) #Field visualization object init.
         self.field_dims = self.field.get_size()
@@ -91,11 +97,21 @@ class Window:
         self.speed_slider.set(self.speed)
         self.speed_slider.bind('<B1-Motion>', self.speed_slider_onpressmove)
         self.speed_slider.grid(row = 5, column = self.width-self.guilen, columnspan = self.guilen)
+        #Tkinter images and zuikis state visualization stuff
+        zuikis_img = Image.open("pics/—Pngtree—rabbit_2622880.png").resize((self.state_icon_dim, self.state_icon_dim),Image.ANTIALIAS)
+        wolf_img = Image.open("pics/wolf.png").resize((self.state_icon_dim, self.state_icon_dim),Image.ANTIALIAS)
+        carrot_img = Image.open("pics/carrot.png").resize((self.state_icon_dim, self.state_icon_dim),Image.ANTIALIAS)\
+        #icons on the screen
+        self.zuikis_icon = ImageTk.PhotoImage(zuikis_img)
+        self.wolf_icon = ImageTk.PhotoImage(wolf_img)
+        self.carrot_icon = ImageTk.PhotoImage(carrot_img)
         ##Canvas to zuikis state
         self.zuikis_state = tk.Canvas(self.root, width = self.guilen, height = self.guilen)
         self.zuikis_state.grid(row=6, column=self.width - self.guilen, columnspan=self.guilen, rowspan = self.guilen)
-        self.zuikis_state.create_line(0,0, self.guilen, self.guilen)
-
+        # self.zuikis_state.create_image(100,100, image=zuikis_icon)
+        # self.zuikis_state.create_image(120, 100, image=wolf_icon)
+        # self.zuikis_state.create_image(140, 100, image=carrot_icon)
+        self.draw_zuikis_state()
         ##Rest
         ######
         #Stuff for embedding
@@ -149,6 +165,16 @@ class Window:
         self.field.set_state(self.path[self.current_state])
         self.current_move_num.config(text = str(self.current_state))
         self.current_energy_num.config(text = '{:.1f}'.format(float(self.path[self.current_state][3])))
+
+    def draw_zuikis_state(self):
+        self.zuikis_state.delete('all')
+        self.draw_zuikis_grids()
+
+    def draw_zuikis_grids(self):
+        print('state dim',self.state_dim)
+        self.zuikis_state.create_line(1, 1, 1, self.state_dim, width = 3)
+        self.zuikis_state.create_line(1, 1, self.state_dim, 1, width=3)
+        self.zuikis_state.create_line(1, self.state_dim - 2, self.state_dim, self.state_dim-20, width=3)
 
 
 class FieldState:

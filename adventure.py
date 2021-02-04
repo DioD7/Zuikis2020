@@ -105,6 +105,9 @@ class Story:
 			print('Warning: story has no record to show.')
 			return None
 
+	def has_eaten(self):
+		return self.action.carrot()
+
 	def show_vision(self):
 		self.action.rabbit_vision().show()
 
@@ -161,6 +164,7 @@ class Actions2:
 		#Func for rabbit attack by wolf he loses energy
 		def attack():
 			new_new_energy = self.energy * 3/4
+			self.wolf_encountered = True
 			return new_new_energy
 
 		#Func for rabbit bounce if hes on wolf
@@ -236,8 +240,8 @@ class Actions2:
 			self.energy += self.carrot_gain
 			del self.carrots[self.carrots.index(self.rabbit)]
 			car, _ = generate_carrots(dims = self.dim, n_carrots=1, dist = self.carrot_gain)
-			self.carrots.append(car[0])
 
+			self.carrots.append(car[0])
 		return [self.rabbit, self.wolves, self.carrots, self.wolf_dirs, self.energy, self.energy <=0]
 
 	def carrot(self):

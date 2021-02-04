@@ -15,17 +15,68 @@ from inspect import getmembers, isfunction
 ##
 
 
+def test_zuikisstatevisual():
+    print('Zuikis state visualization')
+    random.seed(0)
+    # start = configurations.TestFields.getTests()[0]
+    start = configurations.Field(dims = (16,16), zuikis = (2, 2), vilkai=[], carrots=[(13, 13)])
+
+    dms = start.get_dims()
+    act = adventure.Actions2(start.get_places(), dim = start.get_dims())
+    state = start.get_state()[0:-1]
+    energy = start.get_state()[-1]
+    dirs = [3]
+    path = [start.get_state()]
+    for i in range(25):
+        next_state = act.interactions(state, 3, dirs, energy)
+        state = next_state[0:3]
+        energy = next_state[4]
+        dirs = next_state[3]
+        zuikis_state = act.rabbit_vision().get_state()
+        path.append(list(state) + [energy]+[zuikis_state])
+    zuikis_state = act.rabbit_vision()
+    zuikis_state.show()
+    wind = window.Window(path=path, dim=dms)
+
+
+def test_hyperparameter():
+    print('Hyper parameter scan')
+    nmin_samples = [50, 100]
+    ncut_samples = [i for i in range(100, 5000, 100)]
+    results = []
+    for nm_sample in nmin_samples:
+        results.append([])
+        for nc_sample in ncut_samples:
+            random.seed(0)
+            start = configurations.Field(dims=(16, 16), zuikis=(0, 0), vilkai=[], carrotenergy=5)
+            steps = 700
+            iter = 500
+            data = Data(iter, steps, verbose=False, printU=True, printstates=True, name='hyper state')
+            solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin=nm_sample, Ncut=nc_sample, Rplus=500,
+                                     gamma=0.99)
+            try:
+                solver.learn()
+                path = solver.solve()
+                ln = len(path)
+            except:
+                ln = 0
+            results[-1].append(ln)
+    for ind, rez in enumerate(results):
+        print('nmin:',nmin_samples[ind],rez)
+
+
 def test_qsolver():
     print('Q solver')
     random.seed(0)
-    start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[], carrots=[(13,13)],carrotenergy=5)
-    steps = 100
-    iter = 30
+    start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[],carrotenergy=5)
+    steps = 700
+    iter = 500
     data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=5, Rplus=256)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=1500, Rplus=500, gamma=0.99)
     solver.learn()
-    solver.solve()
+    path = solver.solve()
     data.log()
+    wind = window.Window(dim=start.get_dims(),path=path)
 
 
 def test_newzuikisstate():
@@ -55,16 +106,16 @@ def test_newaction():
     print('Action2')
     random.seed(0)
     # start = configurations.TestFields.getTests()[0]
-    start = configurations.Field(dims = configurations.DEFAULT_DIMS, zuikis = (15, 15), vilkai=[(12, 12)], carrots=[(18, 15)])
+    start = configurations.Field(dims = (16,16), zuikis = (2, 2), vilkai=[], carrots=[(13, 13)])
 
     dms = start.get_dims()
-    act = adventure.Actions2(start.get_places())
+    act = adventure.Actions2(start.get_places(), dim = start.get_dims())
     state = start.get_state()[0:-1]
     energy = start.get_state()[-1]
     dirs = [3]
     path = [start.get_state()]
     for i in range(25):
-        next_state = act.interactions(state, 4, dirs, energy)
+        next_state = act.interactions(state, 3, dirs, energy)
         state = next_state[0:3]
         energy = next_state[4]
         dirs = next_state[3]
@@ -206,7 +257,7 @@ class Testing:
     def sep2(self):
         print(self.breaker2)
 
-default_test = 'test_qsolver'
+default_test = 'test_zuikisstatevisual'
 
 if __name__ == '__main__':
     test = Testing()
