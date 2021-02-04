@@ -26,7 +26,8 @@ def test_zuikisstatevisual():
     state = start.get_state()[0:-1]
     energy = start.get_state()[-1]
     dirs = [3]
-    path = [start.get_state()]
+    path = [list(start.get_state())+[act.rabbit_vision().get_state()]]
+    print('paths',path)
     for i in range(25):
         next_state = act.interactions(state, 3, dirs, energy)
         state = next_state[0:3]
@@ -34,8 +35,6 @@ def test_zuikisstatevisual():
         dirs = next_state[3]
         zuikis_state = act.rabbit_vision().get_state()
         path.append(list(state) + [energy]+[zuikis_state])
-    zuikis_state = act.rabbit_vision()
-    zuikis_state.show()
     wind = window.Window(path=path, dim=dms)
 
 

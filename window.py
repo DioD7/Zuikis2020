@@ -22,15 +22,34 @@ from sprites import Zuikis, Vilkas, Morka
 ##
 
 class Window:
-    def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1):
-        ##GUI STUFF
-        self.guilen = 250
+    def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1, guilen = 360, showQ = False, q = None):
+        ##GUI parameters
+        self.guilen = guilen
+        self.show_q = showQ
+        self.gui_height = 30
         self.state_padding = 2
         self.state_line_width = 1
-        self.state_icon_dim = (self.guilen - 2 * self.state_padding - 7 * self.state_line_width) // 8
-        self.state_dim = 8 * self.state_icon_dim + self.state_padding * 2 + self.state_line_width * 7
-        ## More GUI stuff
+        self.state_icon_dim = (self.guilen) // 9
+        self.state_dim = 9 * self.state_icon_dim
+
+
+        anch = 'w'
+        info_anch = 'w'
+        part_len = 0.6
+        first_width = int(self.guilen * part_len)
+        second_width = int(self.guilen * part_len)
+
+        self.gui_bg = 'snow'
+        self.gui_fg_text = 'black'
+        self.gui_fg_num = '#ff931e'
+        self.gui_font = 'Courier 18 bold'
+        ## GUI building
         self.path = path
+        self.q = q
+        ##q must be same length list as path. Each state-action description for each state
+        if self.q and len(self.q) != len(self.path):
+            print('WARNING: q doesnt match the pat.h')
+            exit(1)
         self.root = tk.Tk() #Main window
         self.root.title('Zuikis adventures') #Name of the window
         self.field = FieldState(field=dim, square=squaredim, nwolves=len(path[0][1]), ncarrots=len(path[0][2])) #Field visualization object init.
@@ -40,50 +59,42 @@ class Window:
         hs = self.root.winfo_screenheight()  # height of the screen
         xmid = (ws / 2) - (self.width / 2)
         ymid = (hs / 2) - (self.height / 2)
-        self.root.geometry('{}x{}+{}+{}'.format(self.width, self.height, int(xmid), int(ymid))) #Fixes whole window size and starting position
+        self.root.geometry('{}x{}+{}+{}'.format(self.width, max([self.height,self.gui_height* 7 + self.state_dim]), int(xmid), int(ymid))) #Fixes whole window size and starting position
         self.root.resizable(False, False) #Make window unresizable
 
         self.embed = tk.Frame(self.root, width=self.width-self.guilen, height=self.height) #Embeded pygame frame for field visualization
-        self.embed.grid(row = 0, column = 0,columnspan=self.width-self.guilen, rowspan=self.height)
-        # self.embed.pack(side=tk.LEFT)
+        self.embed.place(x = 0, y = 0, width = self.width-self.guilen, height = self.height)
 
         ##GUI stuff
         ######
-        self.gui_font = 'Courier 18 bold'
+
         self.current_state = 0
         self.playing = True
         self.interval = 1 #Wait time while playing in seconds
         self.speed = speed #Speed of playing: speed = 1/interval and viceversa
         self.last_gui_update = perf_counter()
-        self.gui_bg = 'snow'
-        self.gui_fg_text = 'black'
-        self.gui_fg_num = '#ff931e'
 
-        anch = 'w'
-        info_anch = 'w'
-        part_len = 0.6
-        first_width = int(self.guilen * part_len)
-        second_width = int(self.guilen * part_len)
+
         ##Labels for total number of moves
         self.total_moves = tk.Label(text = 'Total: ', font = self.gui_font, anchor = anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text)
-        self.total_moves.grid(row = 0,column = self.width-self.guilen, columnspan = first_width)
+        self.total_moves.place(y = 0, x = self.width - self.guilen, width = first_width, height = self.gui_height)
         self.total_num = tk.Label(text = int(len(self.path)-1), font = self.gui_font, anchor = info_anch, width = 10,bg = self.gui_bg, fg = self.gui_fg_text)
-        self.total_num.grid(row = 0, column = self.width-self.guilen + first_width, columnspan = second_width)
+        self.total_num.place(y = 0, x = self.width - self.guilen + first_width, width = second_width, height = self.gui_height)
         ##Labels for current move
         self.current_move = tk.Label(text = 'Current:', font = self.gui_font, anchor = anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text)
-        self.current_move.grid(row = 1, column = self.width-self.guilen,columnspan = first_width)
+        self.current_move.place(y = self.gui_height * 1, x = self.width - self.guilen, height = self.gui_height, width = first_width)
         self.current_move_num = tk.Label(text = str(1000), font = self.gui_font, anchor = info_anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text)
-        self.current_move_num.grid(row = 1, column = self.width-self.guilen + first_width, columnspan = second_width)
+        self.current_move_num.place(y = self.gui_height * 1, x = self.width - self.guilen + first_width, height = self.gui_height, width = second_width)
         ##Labels for current energy
         self.current_energy = tk.Label(text = 'Energy:', font = self.gui_font, anchor = anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text)
-        self.current_energy.grid(row = 2, column = self.width-self.guilen,columnspan = first_width)
+        self.current_energy.place(y=self.gui_height * 2, x=self.width - self.guilen, height=self.gui_height,
+                                width=first_width)
         self.current_energy_num = tk.Label(text = str(1000.0), font = self.gui_font, anchor = info_anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_num)
-        self.current_energy_num.grid(row = 2, column = self.width-self.guilen + first_width, columnspan = second_width)
+        self.current_energy_num.place(y = self.gui_height * 2, x = self.width - self.guilen + first_width, height = self.gui_height, width = second_width)
         ##Slider for current move/state
         self.path_slider = tk.Scale(self.root, from_ = 1, to = len(self.path), orient = tk.HORIZONTAL, length = self.guilen-10,activebackground = self.gui_fg_num, showvalue = False)
         self.path_slider.bind('<B1-Motion>', self.path_slider_onpressmove)
-        self.path_slider.grid(column = self.width-self.guilen, row = 3, columnspan = self.guilen)
-
+        self.path_slider.place(y = self.gui_height * 3, x = self.width - self.guilen, height = self.gui_height, width = self.guilen)
         #Play button
         def on_play_press():
             if self.playing:
@@ -91,12 +102,12 @@ class Window:
             else: self.play_button.config(relief = tk.SUNKEN, bg= self.gui_fg_num)
             self.playing = not self.playing
         self.play_button = tk.Button(self.root, text='Play', command = on_play_press, width = 25, relief = tk.SUNKEN, bg= self.gui_fg_num)
-        self.play_button.grid(row = 4, column = self.width-self.guilen, columnspan = self.guilen)
+        self.play_button.place(y = self.gui_height * 4, x = self.width-self.guilen, width = self.guilen, height = self.gui_height)
         #Animation speed slider
         self.speed_slider = tk.Scale(self.root, label = 'Speed', from_ = 0.5, to = 15,orient = tk.HORIZONTAL, length = self.guilen-10,activebackground = self.gui_fg_num)
         self.speed_slider.set(self.speed)
         self.speed_slider.bind('<B1-Motion>', self.speed_slider_onpressmove)
-        self.speed_slider.grid(row = 5, column = self.width-self.guilen, columnspan = self.guilen)
+        self.speed_slider.place(x = self.width-self.guilen, y = self.gui_height * 5, width = self.guilen, height = self.gui_height * 2)
         #Tkinter images and zuikis state visualization stuff
         zuikis_img = Image.open("pics/—Pngtree—rabbit_2622880.png").resize((self.state_icon_dim, self.state_icon_dim),Image.ANTIALIAS)
         wolf_img = Image.open("pics/wolf.png").resize((self.state_icon_dim, self.state_icon_dim),Image.ANTIALIAS)
@@ -107,7 +118,8 @@ class Window:
         self.carrot_icon = ImageTk.PhotoImage(carrot_img)
         ##Canvas to zuikis state
         self.zuikis_state = tk.Canvas(self.root, width = self.guilen, height = self.guilen)
-        self.zuikis_state.grid(row=6, column=self.width - self.guilen, columnspan=self.guilen, rowspan = self.guilen)
+        # self.zuikis_state.grid(row=6, column=self.width - self.guilen, columnspan=self.guilen, rowspan = self.guilen)
+        self.zuikis_state.place(x = self.width-self.guilen+self.state_padding, y = self.gui_height*7, width = self.state_dim, height = self.state_dim)
         # self.zuikis_state.create_image(100,100, image=zuikis_icon)
         # self.zuikis_state.create_image(120, 100, image=wolf_icon)
         # self.zuikis_state.create_image(140, 100, image=carrot_icon)
@@ -165,16 +177,57 @@ class Window:
         self.field.set_state(self.path[self.current_state])
         self.current_move_num.config(text = str(self.current_state))
         self.current_energy_num.config(text = '{:.1f}'.format(float(self.path[self.current_state][3])))
+        self.draw_zuikis_state()
 
     def draw_zuikis_state(self):
         self.zuikis_state.delete('all')
         self.draw_zuikis_grids()
+        zuikis_pos = (4,4)
+        current_zuikis_state = self.path[self.current_state][4]
+        for row in range(9):
+            rel_y = row - zuikis_pos[1]
+            current_y = row * self.state_icon_dim
+            for col in range(9):
+                rel_x = col - zuikis_pos[0]
+                this_pos = (rel_x, rel_y)
+                current_x = col * self.state_icon_dim
+                ##Draw indicator of outside vision - black square
+                if abs(this_pos[0]) + abs(this_pos[1]) > 4:
+                    self.zuikis_state.create_rectangle(current_x, current_y, current_x + self.state_icon_dim, current_y + self.state_icon_dim, fill='black')
+                ##Draw wolf
+                elif this_pos in current_zuikis_state[0]:
+                    self.zuikis_state.create_image(current_x+self.state_icon_dim//2, current_y+self.state_icon_dim//2, image=self.wolf_icon)
+                ##Draw carrot
+                elif this_pos in current_zuikis_state[1]:
+                    self.zuikis_state.create_image(current_x+self.state_icon_dim//2, current_y+self.state_icon_dim//2, image=self.carrot_icon)
+                ##Draw zuikis himself
+                elif this_pos == (0,0):
+                    self.zuikis_state.create_image(current_x+self.state_icon_dim//2, current_y+self.state_icon_dim//2, image=self.zuikis_icon)
+                ##Draw walls. In x direction
+                elif (rel_x <= current_zuikis_state[2][0] and current_zuikis_state[2][0] < 0) or (rel_x >= current_zuikis_state[2][0] and current_zuikis_state[2][0] > 0):
+                    self.zuikis_state.create_rectangle(current_x, current_y, current_x + self.state_icon_dim, current_y + self.state_icon_dim, fill='grey')
+                ##In y direction
+                elif (rel_y <= current_zuikis_state[2][1] and current_zuikis_state[2][1] < 0) or (rel_y >= current_zuikis_state[2][1] and current_zuikis_state[2][1] > 0):
+                    self.zuikis_state.create_rectangle(current_x, current_y, current_x + self.state_icon_dim, current_y + self.state_icon_dim, fill='grey')
+
+
+
 
     def draw_zuikis_grids(self):
-        print('state dim',self.state_dim)
+        #Draw bacground
+        self.zuikis_state.create_rectangle(0,0,self.state_dim, self.state_dim, fill=self.gui_bg)
+        # Draws grid
+        for row in range(9):
+            hgh = self.state_icon_dim * (row + 1)
+            self.zuikis_state.create_line(1, hgh, self.state_dim, hgh, width=self.state_line_width)
+        for col in range(9):
+            wdt = self.state_icon_dim * (col + 1)
+            self.zuikis_state.create_line(wdt, 1, wdt, self.state_dim, width=self.state_line_width)
+        ##Draws outer bounds
         self.zuikis_state.create_line(1, 1, 1, self.state_dim, width = 3)
         self.zuikis_state.create_line(1, 1, self.state_dim, 1, width=3)
-        self.zuikis_state.create_line(1, self.state_dim - 2, self.state_dim, self.state_dim-20, width=3)
+        self.zuikis_state.create_line(1, self.state_dim-2, self.state_dim, self.state_dim-2, width=3)
+        self.zuikis_state.create_line(self.state_dim-2, 0, self.state_dim - 2,self.state_dim, width = 3)
 
 
 class FieldState:
