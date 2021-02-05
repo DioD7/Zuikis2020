@@ -99,15 +99,18 @@ class QSolver(Solver):
         self.policy = self.get_policy()
         self.data.record_policy(self.policy)
         self.story = adventure.Story(self.start, record=True)
+        q = []
         while not self.story.is_over():
             state = self.story.get_vision()
+            q.append(self.Q[state])
             if state in self.policy.keys():
                 self.story.move(state.get_real_move(self.policy[state]))
             else:
                 print('WARNING. Unknown state detected. Exiting.')
                 exit(1)
+        q.append(self.Q[self.story.get_vision()])
         self.data.end()
-        return self.story.get_path()
+        return self.story.get_path(), q
 
     def get_policy(self):
         policy = dict()

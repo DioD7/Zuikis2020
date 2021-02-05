@@ -64,7 +64,7 @@ class Story:
 		self.dirs = []
 		self.action = Actions2(self.places, dim = self.dims, carrot_energy=self.field.carrot_energy, carrot_factor=self.field.carrot_factor)
 		if record:
-			self.path = [(self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision())]
+			self.path = [(self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision().get_state())]
 		else: self.path = []
 
 	def move(self, dir):
@@ -81,7 +81,7 @@ class Story:
 		if self.energy <= 0 or state[5]:
 			self.has_ended = True
 		if self.record:
-			next_step = (self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision())
+			next_step = (self.places[0], self.places[1], self.places[2], self.energy, self.action.rabbit_vision().get_state())
 			self.path.append(next_step)
 
 	def potential_move(self, dir):
@@ -265,14 +265,23 @@ class Actions2:
 			if Actions.manh_dist(self.rabbit, c) <= self.manh_distance:
 				carrots.append((c[0]-self.rabbit[0],c[1]-self.rabbit[1]))
 		##Wall limits for x and y
-		if self.rabbit[0] +1 >= self.manh_distance and abs(self.rabbit[0] - self.dim[0] +1) >= self.manh_distance:
-			x_lim = 0
-		else:
-			x_lim = min(self.rabbit[0]-self.manh_distance, self.dim[0] - self.rabbit[0])
-		if self.rabbit[1] +1 >= self.manh_distance and abs(self.rabbit[1] - self.dim[1] +1) >= self.manh_distance:
-			y_lim = 0
-		else:
-			y_lim = min(self.rabbit[1]-self.manh_distance, self.dim[1] - self.rabbit[1])
+		# if self.rabbit[0] +1 >= self.manh_distance and abs(self.rabbit[0] - self.dim[0] +1) >= self.manh_distance:
+		# 	x_lim = 0
+		# else:
+		# 	x_lim = min(self.rabbit[0]-self.manh_distance, self.dim[0] - self.rabbit[0])
+		# if self.rabbit[1] +1 >= self.manh_distance and abs(self.rabbit[1] - self.dim[1] +1) >= self.manh_distance:
+		# 	y_lim = 0
+		# else:
+		# 	y_lim = min(self.rabbit[1]-self.manh_distance, self.dim[1] - self.rabbit[1])
+		x_lim, y_lim = 0, 0
+		if self.rabbit[0] < 4:
+			x_lim = -self.rabbit[0] - 1
+		elif self.dim[0] - 1 - self.rabbit[0] < 4:
+			x_lim = self.dim[0] - self.rabbit[0]
+		if self.rabbit[1] < 4:
+			y_lim = -self.rabbit[1] - 1
+		elif self.dim[1] - 1 - self.rabbit[1] < 4:
+			y_lim = self.dim[1] - self.rabbit[1]
 		vision = ZuikisState(wolves, carrots, [x_lim,y_lim])
 		return vision
 

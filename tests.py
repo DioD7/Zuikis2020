@@ -27,7 +27,6 @@ def test_zuikisstatevisual():
     energy = start.get_state()[-1]
     dirs = [3]
     path = [list(start.get_state())+[act.rabbit_vision().get_state()]]
-    print('paths',path)
     for i in range(25):
         next_state = act.interactions(state, 3, dirs, energy)
         state = next_state[0:3]
@@ -68,12 +67,12 @@ def test_qsolver():
     print('Q solver')
     random.seed(0)
     start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[],carrotenergy=5)
-    steps = 700
+    steps = 1000
     iter = 500
     data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=1500, Rplus=500, gamma=0.99)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=100, Rplus=500, gamma=0.99)
     solver.learn()
-    path = solver.solve()
+    [path, q] = solver.solve()
     data.log()
     wind = window.Window(dim=start.get_dims(),path=path)
 
@@ -124,25 +123,6 @@ def test_newaction():
     wind = window.Window(path=path, dim=dms)
 
 
-# def test_mdpsolver():
-#     random.seed(0)
-#     start = configurations.TestFields.getTests()[0]
-#     iter = 200
-#     steps = 900
-#     data = Data(iter, steps, verbose = False)
-#     solver = solvers.MDPSolver(start, data = data,maxiter=200, maxstep=900, seed=0, nc = 50, sa = False, usepolicy=True)
-#     solver.learn()
-#     solver.solve()
-
-
-def test_randomsolver():
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    solver = solvers.RandomSolver(start)
-    solver.learn()
-    solver.solve()
-
-
 def test_zuikisstate():
     random.seed(0)
     start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
@@ -162,44 +142,7 @@ def test_story():
     wind = story.show()
 
 
-def test_vision():
-    start = configurations.Field(zuikis = (14,15), vilkai=[(11, 15)], carrots=[(14, 11)])
-    act = adventure.Actions(agent_places=start.get_places())
-    dms = start.get_dims()
-    state = start.get_state()[0:-1]
-    energy = start.get_state()[-1]
-    dirs = [3]
-    path = [start.get_state()]
-    for i in range(50):
-        next_state = act.interactions(state, 8, dirs, energy)
-        state = next_state[0:3]
-        energy = next_state[4]
-        dirs = next_state[3]
-        path.append(list(state) + [energy])
 
-
-def test_actions():
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    dms = start.get_dims()
-    act = adventure.Actions()
-    state = start.get_state()[0:-1]
-    energy = start.get_state()[-1]
-    dirs = [3]
-    path = [start.get_state()]
-    for i in range(100):
-        next_state = act.interactions(state, 8, dirs, energy)
-        state = next_state[0:3]
-        energy = next_state[4]
-        dirs = next_state[3]
-        path.append(list(state) + [energy])
-    wind = window.Window(path = path, dim = dms)
-
-
-def test_field():
-    tst = configurations.TestFields.getTests()
-    state = tst[2].get_state()
-    wind = window.Window(path=[state], dim = tst[2].get_dims())
 
 
 class Testing:
