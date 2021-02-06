@@ -1,8 +1,10 @@
 import window
 import configurations
 import adventure
+import zuikis_state
 import solvers
 import qsolver
+import time
 from data import Data
 import utils
 import random
@@ -13,6 +15,72 @@ from inspect import getmembers, isfunction
 ##
 #Tests
 ##
+
+
+def test_qsolvermulti():
+    print('Q solver multi')
+    random.seed(0)
+    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrotenergy=3)
+    steps = 200
+    iter = 10000
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=800, Rplus=5, gamma=0.99)
+    solver.learn(save_point=(1000, 20))
+    # solver.learn(save_point=(1000, 30), start_story=solver.get_story_copy())
+    # solver.learn(save_point=(1000, 40), start_story=solver.get_story_copy())
+    # solver.learn(save_point=(1000, 45), start_story=solver.get_story_copy())
+    solver.learn(start_story=solver.get_story_copy())
+
+    [path, q] = solver.solve()
+    data.log()
+    wind = window.Window(dim=start.get_dims(),path=path, q = q, showQ=True)
+
+
+
+def test_qsolvercomponent():
+    print('Q solver')
+    random.seed(time.perf_counter())
+    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrots=[(2,2)],carrotenergy=3)
+    steps = 400
+    iter = 2000
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=100, Rplus=500, gamma=0.99)
+    test_state = zuikis_state.ZuikisState([], [(2, 2)], [1, 1])
+    solver.current_state = test_state
+    solver.Q[test_state] = test_state.get_empty_dirs()
+    solver.Q[test_state][1] = 1
+    solver.Q[test_state][2] = 2
+    solver.Q[test_state][3] = 3
+    solver.Q[test_state][4] = 4
+    solver.Q[test_state][5] = 4
+    solver.Q[test_state][6] = 5
+    solver.Q[test_state][7] = 6
+    solver.Q[test_state][8] = 6
+    for i in range(100):
+        print(solver.get_max_actionvalue())
+
+
+def test_learning():
+    print('learning')
+    random.seed(0)
+    start = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrotenergy=5)
+    steps = 400
+    iter = 200
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin=5, Ncut=20, Rplus=500,
+                             gamma=0.99, saveinfo=True)
+    [paths, q, multiq] = solver.learn()
+    # data.log()
+    test_state = zuikis_state.ZuikisState([],[(-1, 1)],[4,0])
+    counter = 0
+    for mq in multiq:
+        if test_state not in mq.keys():
+            print(counter, 'EMPTY')
+        else:
+            print(counter, mq[test_state])
+        counter+=1
+    episode = 199
+    wind = window.Window(dim=start.get_dims(), path=paths[episode], q=q[episode], showQ=True)
 
 
 def test_zuikisstatevisual():
@@ -66,15 +134,15 @@ def test_hyperparameter():
 def test_qsolver():
     print('Q solver')
     random.seed(0)
-    start = configurations.Field(dims=(16,16),zuikis=(2,2),vilkai=[],carrotenergy=5)
-    steps = 1000
-    iter = 500
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 5, Ncut=100, Rplus=500, gamma=0.99)
+    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrotenergy=3)
+    steps = 400
+    iter = 100
+    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
+    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=100, Rplus=10, gamma=0.99)
     solver.learn()
     [path, q] = solver.solve()
     data.log()
-    wind = window.Window(dim=start.get_dims(),path=path)
+    wind = window.Window(dim=start.get_dims(),path=path, q = q, showQ=True)
 
 
 def test_newzuikisstate():
@@ -199,7 +267,7 @@ class Testing:
     def sep2(self):
         print(self.breaker2)
 
-default_test = 'test_zuikisstatevisual'
+default_test = 'test_qsolvermulti'
 
 if __name__ == '__main__':
     test = Testing()

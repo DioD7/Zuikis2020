@@ -9,7 +9,7 @@ from PIL import ImageTk, Image
 
 from sprites import Zuikis, Vilkas, Morka
 
-##
+##############################
 #Path must be a list of game states. Each state describes the game completely i.e. it tells where every entity is on the grid.
 #Each state has 5 elements: zuikis, wolves, carrots, energy, zuikis state.
 #Zuikis element is tuple of 2 numbers where zuikis is on the board. In terms of square coordinates
@@ -19,12 +19,15 @@ from sprites import Zuikis, Vilkas, Morka
 #Zuikis state is last element that consists of current field of view for zuikis.
 #Diference between each state is one turn. For example game is initialized in state Path[0], then entities make their moves
 #and game evolves to state Path[1].
-##
+###############################
+
 
 class Window:
-    def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1, guilen = 360, showQ = False, q = None):
+    def __init__(self, path = None, dim = (30, 30), squaredim = 25, speed = 1, guilen = 360, showQ = False, q = None, xtralen = 200):
         ##GUI parameters
         self.guilen = guilen
+        if showQ: self.extra_guilen = xtralen
+        else: self.extra_guilen = 0
         self.show_q = showQ
         self.gui_height = 30
         self.state_padding = 2
@@ -38,6 +41,10 @@ class Window:
         part_len = 0.6
         first_width = int(self.guilen * part_len)
         second_width = int(self.guilen * part_len)
+
+        extra_part_len = 0.2
+        extra_first_width = int(self.extra_guilen * extra_part_len)
+        extra_second_width = int(self.extra_guilen * (1 - extra_part_len))
 
         self.gui_bg = 'snow'
         self.gui_fg_text = 'black'
@@ -60,7 +67,7 @@ class Window:
         hs = self.root.winfo_screenheight()  # height of the screen
         xmid = (ws / 2) - (self.width / 2)
         ymid = (hs / 2) - (self.height / 2)
-        self.root.geometry('{}x{}+{}+{}'.format(self.width, max([self.height,self.gui_height* 9 + self.state_dim]), int(xmid), int(ymid))) #Fixes whole window size and starting position
+        self.root.geometry('{}x{}+{}+{}'.format(self.width + self.extra_guilen, max([self.height,self.gui_height* 10 + self.state_dim]), int(xmid), int(ymid))) #Fixes whole window size and starting position
         self.root.resizable(False, False) #Make window unresizable
 
         self.embed = tk.Frame(self.root, width=self.width-self.guilen, height=self.height) #Embeded pygame frame for field visualization
@@ -142,6 +149,22 @@ class Window:
         self.zuikis_state_info = tk.Label(text = '', font = self.gui_font_secondary, anchor = anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text, justify=tk.LEFT, wraplength = self.guilen)
         self.zuikis_state_info.place(x = self.width - self.guilen, y = self.gui_height*8 + self.state_dim, width = self.guilen, height = self.gui_height * 2)
         self.update_zuikis_state_info()
+
+        ##Q info stuff
+        ######
+        start_height = self.gui_height * 8
+        self.q_labels, self.q_labels_num = [], []
+        if self.show_q:
+            for i in range(10):
+                lbl = tk.Label(text = str(i),font = self.gui_font_secondary, anchor = anch, width = 10, bg = self.gui_bg, fg = self.gui_fg_text, justify=tk.LEFT)
+                lbl.place(x = self.width, y = start_height + i * self.gui_height, width = extra_first_width, height = self.gui_height)
+                self.q_labels.append(lbl)
+                lbl_num = tk.Label(text='', font=self.gui_font_secondary, anchor=anch, width=10, bg=self.gui_bg,
+                               fg=self.gui_fg_text, justify=tk.LEFT)
+                lbl_num.place(x=self.width + extra_first_width, y=start_height + i * self.gui_height, width=extra_second_width,
+                          height=self.gui_height)
+                self.q_labels_num.append(lbl_num)
+
         ##Rest
         ######
         #Stuff for embedding
@@ -158,7 +181,7 @@ class Window:
             self.root.destroy()
 
         self.root.protocol("WM_DELETE_WINDOW", on_close)
-        self.update_currents()
+        self.update_currents()#Update current GUI state for init
         self.run()#Init main loop
 
     def run(self):
@@ -199,6 +222,11 @@ class Window:
         self.path_slider.set(self.current_state)
         self.update_zuikis_state_info()
         self.draw_zuikis_state()
+        if self.show_q:
+            for i in range(10):
+                self.q_labels_num[i].config(text='')
+            for key in self.q[self.current_state].keys():
+                self.q_labels_num[key].config(text=str(self.q[self.current_state][key]))
 
     def draw_zuikis_state(self):
         self.zuikis_state.delete('all')
@@ -254,6 +282,7 @@ class Window:
         walls = current_zuikis_state[2]
         pattern = 'W: {} C: {} Wl: {}'
         self.zuikis_state_info.config(text = pattern.format(wolfs, carrots, walls))
+
 
 
 class FieldState:

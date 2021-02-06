@@ -111,6 +111,10 @@ class Story:
 	def show_vision(self):
 		self.action.rabbit_vision().show()
 
+	def get_state(self):
+		"""Returns a full state for visualization in window"""
+		return list(self.places) + [self.energy] + [self.get_vision().get_state()]
+
 	def get_vision(self):
 		"""Get zuikis vision state"""
 		return self.action.rabbit_vision()
@@ -125,6 +129,9 @@ class Story:
 
 
 class Actions2:
+	#1 2 3
+	#8 z 4
+	#7 6 5
 	move = {
 		7: (-1, -1),
 		6: (0, -1),
@@ -186,6 +193,13 @@ class Actions2:
 				self.rabbit = bounce()
 				break
 		else:
+			# Carrot
+			if self.rabbit in self.carrots and not self.wolf_encountered:
+				self.carrot_eaten = True
+				self.energy += self.carrot_gain
+				del self.carrots[self.carrots.index(self.rabbit)]
+				car, _ = generate_carrots(dims=self.dim, n_carrots=1, dist=self.carrot_gain)
+				self.carrots.append(car[0])
 			new_rabbit_place = (self.rabbit[0] + self.move[dir][0],self.rabbit[1] + self.move[dir][1])
 			if not 0 <= new_rabbit_place[0] < self.dim[0] or not 0 <= new_rabbit_place[1] < self.dim[1]:
 				new_rabbit_place = self.rabbit
@@ -234,14 +248,7 @@ class Actions2:
 					new_wolf_pos = (wolf[0] + delta_wolf_pos[0], wolf[1] + delta_wolf_pos[1])
 				self.wolves[index] = new_wolf_pos
 				self.wolf_dirs[index] = self.inverse_move[delta_wolf_pos]
-		#Carrot third
-		if self.rabbit in self.carrots and not self.wolf_encountered:
-			self.carrot_eaten = True
-			self.energy += self.carrot_gain
-			del self.carrots[self.carrots.index(self.rabbit)]
-			car, _ = generate_carrots(dims = self.dim, n_carrots=1, dist = self.carrot_gain)
 
-			self.carrots.append(car[0])
 		return [self.rabbit, self.wolves, self.carrots, self.wolf_dirs, self.energy, self.energy <=0]
 
 	def carrot(self):

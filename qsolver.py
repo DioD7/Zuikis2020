@@ -5,6 +5,7 @@ import adventure
 from collections import Counter
 from math import inf
 import random
+import copy
 
 ###
 #The Q solver
@@ -14,7 +15,7 @@ import random
 class QSolver(Solver):
     """Reinforcement learning Q solver"""
     def __init__(self, field, data = None, maxiter = 100, maxstep = 100, verbose = False, seed = None, gamma = 1, \
-                 Rplus = 10, Ncut = 5, Nmin = 5, defaultcost = -1):
+                 Rplus = 10, Ncut = 5, Nmin = 5, defaultcost = -1, saveinfo = False):
         super(QSolver, self).__init__(field, data=data, verbose=verbose, seed=seed)
         self.current_state, self.last_state = None, None
         self.last_action = None
@@ -22,18 +23,24 @@ class QSolver(Solver):
         self.Q = dict()
         self.energy = 0
         self.policy = None
+        self.story_copy = None
+        self.multi_q = []
+        self.Qs, self.paths = [], []
 
+        self.save = saveinfo
         self.max_iter, self.max_step = maxiter, maxstep
         self.gamma = gamma
         self.n_cut, self.n_min, self.r_plus = Ncut, Nmin, Rplus
 
-
-    def learn(self):
+    def learn(self, start_story = None, save_point = (0,0)):
         """Learn Q function"""
         #Perform max_iter number of episodes
+        max_carrot = 0
         for i in range(self.max_iter):
+            carrot_counter = 0
             #Create new story and get its state
-            self.story = adventure.Story(self.start, record=False)
+            if not start_story:
+                self.story = adventure.Story(self.start, record=False)
             self.energy = self.story.get_current_energy()
             self.current_state = self.story.get_vision()
             self.data.start_new_episode(self.current_state, self.energy, self.Q, self.freqs)
@@ -41,11 +48,16 @@ class QSolver(Solver):
             if self.current_state not in self.freqs.keys():
                 self.freqs[self.current_state] = self.current_state.get_empty_dirs()
                 self.Q[self.current_state] = self.current_state.get_empty_dirs()
+            if self.save:
+                self.Qs.append([copy.deepcopy(self.Q[self.current_state])])
+                self.paths.append([copy.deepcopy(self.story.get_state())])
             #Perform a single episode
             for s in range(self.max_step):
                 if self.story.has_eaten():
                     eat = True
+                    carrot_counter += 1
                 else: eat = False
+                if (i+1, s+1) == save_point: self.story_copy = copy.deepcopy(self.story)
                 #Find best next move value from current state
                 next_move = self.get_max_actionvalue()
                 self.last_state = self.current_state
@@ -56,18 +68,23 @@ class QSolver(Solver):
                 if self.current_state not in self.freqs.keys():
                     self.freqs[self.current_state] = self.current_state.get_empty_dirs()
                     self.Q[self.current_state] = self.current_state.get_empty_dirs()
+                if self.save:
+                    self.Qs[-1].append(copy.deepcopy(self.Q[self.current_state]))
+                    self.paths[-1].append(copy.deepcopy(self.story.get_state()))
                 #Update Q of the previous state
                 R = self.story.get_current_energy() - self.energy
-                # if R > 0: R = 500
+                # if R > 0: R = 1000
                 self.energy = self.story.get_current_energy()
                 delta_Q = R + self.gamma * max(self.Q[self.current_state].values()) - self.Q[self.last_state][next_move]
-                # if eat:
-                #     print('delta',delta_Q)
-                #     print('alpha', self.get_alpha(self.last_state, next_move))
                 self.Q[self.last_state][next_move] += self.get_alpha(self.last_state, next_move) * delta_Q
                 self.data.record_step(self.current_state, self.energy, self.Q, self.freqs)
                 if self.story.is_over(): break
-
+            if carrot_counter > max_carrot: max_carrot = carrot_counter
+            if self.save:
+                self.multi_q.append(copy.deepcopy(self.Q))
+        print('Max carrots per episode:', max_carrot)
+        if self.save:
+            return self.paths, self.Qs, self.multi_q
 
     def f(self, action):
         """Exploration function f based on action from current state"""
@@ -125,3 +142,6 @@ class QSolver(Solver):
             max_value = max(values.keys())
             policy[state] = random.sample(values[max_value],1)[0]
         return policy
+
+    def get_story_copy(self):
+        return self.story_copy

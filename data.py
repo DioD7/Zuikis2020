@@ -72,9 +72,9 @@ class Data:
             print('Iterations',self.iter)
             print('Steps per iteration', self.steps)
             print('*'*80)
-            print('3 2 1')
-            print('4 z 8')
-            print('5 6 7')
+            print('7 6 5')
+            print('8 z 4')
+            print('1 2 3')
             print('*' * 80)
             counter = 0
             if self.log_episodes:
