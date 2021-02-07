@@ -17,70 +17,24 @@ from inspect import getmembers, isfunction
 ##
 
 
-def test_qsolvermulti():
-    print('Q solver multi')
-    random.seed(0)
-    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrotenergy=3)
-    steps = 200
-    iter = 10000
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=800, Rplus=5, gamma=0.99)
-    solver.learn(save_point=(1000, 20))
-    # solver.learn(save_point=(1000, 30), start_story=solver.get_story_copy())
-    # solver.learn(save_point=(1000, 40), start_story=solver.get_story_copy())
-    # solver.learn(save_point=(1000, 45), start_story=solver.get_story_copy())
-    solver.learn(start_story=solver.get_story_copy())
+def test_qsolver():
+    print('Q solver testing')
+    start1 = configurations.Field(dims=(16,16), zuikis = (2,2), vilkai=[], carrotenergy=5, carrotfactor= 0.7)
+    start2 = configurations.Field(dims=(16, 16), zuikis=(2, 14), vilkai=[], carrotenergy=5, carrotfactor=0.7)
+    start3 = configurations.Field(dims=(16, 16), zuikis=(14, 2), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
+    start4 = configurations.Field(dims=(16, 16), zuikis=(14, 14), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
+    solver = qsolver.QSolver(ncut = 1500, nmin = 10, rplus=20)
+    paths, quality = solver.learn(start1, 200, 400)
+    paths, quality = solver.learn(start2, 200, 400)
+    paths, quality = solver.learn(start3, 200, 400)
+    paths, quality = solver.learn(start4, 200, 400)
+    __path, __qs = solver.solve(start1)
+    episode = 99
+    _path = __path
+    _q = __qs
+    print('Total states:',len(solver.quality.Q.keys()))
+    win = window.Window(dim=start1.get_dims(), path=_path, showQ=True, q=_q)
 
-    [path, q] = solver.solve()
-    data.log()
-    wind = window.Window(dim=start.get_dims(),path=path, q = q, showQ=True)
-
-
-
-def test_qsolvercomponent():
-    print('Q solver')
-    random.seed(time.perf_counter())
-    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrots=[(2,2)],carrotenergy=3)
-    steps = 400
-    iter = 2000
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=100, Rplus=500, gamma=0.99)
-    test_state = zuikis_state.ZuikisState([], [(2, 2)], [1, 1])
-    solver.current_state = test_state
-    solver.Q[test_state] = test_state.get_empty_dirs()
-    solver.Q[test_state][1] = 1
-    solver.Q[test_state][2] = 2
-    solver.Q[test_state][3] = 3
-    solver.Q[test_state][4] = 4
-    solver.Q[test_state][5] = 4
-    solver.Q[test_state][6] = 5
-    solver.Q[test_state][7] = 6
-    solver.Q[test_state][8] = 6
-    for i in range(100):
-        print(solver.get_max_actionvalue())
-
-
-def test_learning():
-    print('learning')
-    random.seed(0)
-    start = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrotenergy=5)
-    steps = 400
-    iter = 200
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin=5, Ncut=20, Rplus=500,
-                             gamma=0.99, saveinfo=True)
-    [paths, q, multiq] = solver.learn()
-    # data.log()
-    test_state = zuikis_state.ZuikisState([],[(-1, 1)],[4,0])
-    counter = 0
-    for mq in multiq:
-        if test_state not in mq.keys():
-            print(counter, 'EMPTY')
-        else:
-            print(counter, mq[test_state])
-        counter+=1
-    episode = 199
-    wind = window.Window(dim=start.get_dims(), path=paths[episode], q=q[episode], showQ=True)
 
 
 def test_zuikisstatevisual():
@@ -105,46 +59,6 @@ def test_zuikisstatevisual():
     wind = window.Window(path=path, dim=dms)
 
 
-def test_hyperparameter():
-    print('Hyper parameter scan')
-    nmin_samples = [50, 100]
-    ncut_samples = [i for i in range(100, 5000, 100)]
-    results = []
-    for nm_sample in nmin_samples:
-        results.append([])
-        for nc_sample in ncut_samples:
-            random.seed(0)
-            start = configurations.Field(dims=(16, 16), zuikis=(0, 0), vilkai=[], carrotenergy=5)
-            steps = 700
-            iter = 500
-            data = Data(iter, steps, verbose=False, printU=True, printstates=True, name='hyper state')
-            solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin=nm_sample, Ncut=nc_sample, Rplus=500,
-                                     gamma=0.99)
-            try:
-                solver.learn()
-                path = solver.solve()
-                ln = len(path)
-            except:
-                ln = 0
-            results[-1].append(ln)
-    for ind, rez in enumerate(results):
-        print('nmin:',nmin_samples[ind],rez)
-
-
-def test_qsolver():
-    print('Q solver')
-    random.seed(0)
-    start = configurations.Field(dims=(7,7),zuikis=(0,0),vilkai=[],carrotenergy=3)
-    steps = 400
-    iter = 100
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True, verboseinterval=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nmin= 10, Ncut=100, Rplus=10, gamma=0.99)
-    solver.learn()
-    [path, q] = solver.solve()
-    data.log()
-    wind = window.Window(dim=start.get_dims(),path=path, q = q, showQ=True)
-
-
 def test_newzuikisstate():
     print('New ZuikisState')
     start = configurations.Field(dims=(30, 30), zuikis=(15, 15), vilkai=[], carrots=[(14,14), (17,17)], carrotenergy=5)
@@ -155,17 +69,6 @@ def test_newzuikisstate():
     print('wolves, carrots, walls',state.wolves, state.carrots, state.walls)
     print('Empty dirs',state.get_empty_dirs())
     print('Dirs', state.get_dirs())
-
-
-def profile_qsolver():
-    print('Q profiler')
-    random.seed(0)
-    start = configurations.TestFields.getTests()[0]
-    steps = 1000
-    iter = 100
-    data = Data(iter, steps, verbose=False, printU=True, printstates=True)
-    solver = qsolver.QSolver(start, data=data, maxiter=iter, maxstep=steps, seed=0, Nalpha=2, Ncut=2, Rplus=500)
-    cProfile.runctx('solver.learn()',globals(),locals(), sort='time')
 
 
 def test_newaction():
@@ -267,7 +170,7 @@ class Testing:
     def sep2(self):
         print(self.breaker2)
 
-default_test = 'test_qsolvermulti'
+default_test = 'test_qsolver'
 
 if __name__ == '__main__':
     test = Testing()
