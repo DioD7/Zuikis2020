@@ -17,24 +17,43 @@ from inspect import getmembers, isfunction
 ##
 
 
+
 def test_qsolver():
     print('Q solver testing')
+    random.seed(0)
     start1 = configurations.Field(dims=(16,16), zuikis = (2,2), vilkai=[], carrotenergy=5, carrotfactor= 0.7)
     start2 = configurations.Field(dims=(16, 16), zuikis=(2, 14), vilkai=[], carrotenergy=5, carrotfactor=0.7)
     start3 = configurations.Field(dims=(16, 16), zuikis=(14, 2), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
     start4 = configurations.Field(dims=(16, 16), zuikis=(14, 14), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
-    solver = qsolver.QSolver(ncut = 1500, nmin = 10, rplus=20)
-    paths, quality = solver.learn(start1, 200, 400)
-    paths, quality = solver.learn(start2, 200, 400)
-    paths, quality = solver.learn(start3, 200, 400)
-    paths, quality = solver.learn(start4, 200, 400)
-    __path, __qs = solver.solve(start1)
+    start_solve = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrots=[(2, 3),(8, 1),(6,5),(5,15),(15,9),(13,14)], carrotenergy=5, carrotfactor=0.7)
+    solver = qsolver.QSolver(ncut = 20, nmin = 10, rplus=200, gamma=0.8)
+    timer = utils.Timer()
+    paths1, quality1 = solver.learn(start1, 300, 400)
+    paths2, quality2 = solver.learn(start2, 300, 400)
+    paths3, quality3 = solver.learn(start3, 300, 400)
+    paths4, quality4 = solver.learn(start4, 300, 400)
+    timer.output('Learning finished in')
+    # __path, __qs = solver.solve(start_solve)
+    # timer.output('Solving finished in')
+    __path, __qs = solver.quality.get_state_info()
     episode = 99
     _path = __path
     _q = __qs
     print('Total states:',len(solver.quality.Q.keys()))
     win = window.Window(dim=start1.get_dims(), path=_path, showQ=True, q=_q)
 
+
+def test_newzuikisstate():
+    print('New ZuikisState')
+    start = configurations.Field(dims=(30, 30), zuikis=(4, 3), vilkai=[], carrots=[(14,14), (17,17)], carrotenergy=5)
+    act = adventure.Actions2(start.get_places())
+    state = act.rabbit_vision()
+    state.show()
+    print('Type is',state.type)
+    print('wolves, carrots, walls',state.wolves, state.carrots, state.walls)
+    print('Empty dirs',state.get_empty_dirs())
+    print('Dirs', state.get_dirs())
+    print('Signature',state.signature)
 
 
 def test_zuikisstatevisual():
@@ -57,18 +76,6 @@ def test_zuikisstatevisual():
         zuikis_state = act.rabbit_vision().get_state()
         path.append(list(state) + [energy]+[zuikis_state])
     wind = window.Window(path=path, dim=dms)
-
-
-def test_newzuikisstate():
-    print('New ZuikisState')
-    start = configurations.Field(dims=(30, 30), zuikis=(15, 15), vilkai=[], carrots=[(14,14), (17,17)], carrotenergy=5)
-    act = adventure.Actions2(start.get_places())
-    state = act.rabbit_vision()
-    state.show()
-    print('Type is',state.type)
-    print('wolves, carrots, walls',state.wolves, state.carrots, state.walls)
-    print('Empty dirs',state.get_empty_dirs())
-    print('Dirs', state.get_dirs())
 
 
 def test_newaction():

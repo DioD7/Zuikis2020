@@ -44,13 +44,13 @@ class ZuikisState:
 		self.type = (len(self.wolves), len(self.carrots), sum([1 for w in self.walls if w != 0]))
 		self.parse_entities()
 		##Sees nothing
-		if sum(self.type) == 0:
+		if self.type[0] == 0 and self.type[1] == 0 and self.type[2] == 0:
 			self.dirs = [i for i in range(1, 10)]
 			self.hsh = hash(self.type)
 		##Sees only carrots
 		elif self.type[1] > 0 and self.type[0] == 0 and self.type[2] == 0:
 			self.dirs = [i for i in range(len(self.carrot_dirs))]
-			self.hsh = hash(self.type)
+			self.hsh = hash(self.carrot_dirs)
 		##All other scenarios. With wolfs and walls you need to keep track both direction and distance
 		else:
 			self.dirs = [i for i in range(1, 9)]
@@ -64,13 +64,13 @@ class ZuikisState:
 				dirr = self.get_closest_dir(ent)
 				out_list[i].append((dirr, dist))
 		self.wolf_dirs = frozenset(self.wolf_dirs)
-		self.carrot_dirs = tuple(self.carrot_dirs)
-		self.wall_dirs = frozenset(self.walls)
+		self.carrot_dirs = frozenset(self.carrot_dirs)
+		self.wall_dirs = frozenset([1 if w != 0 else 0 for w in self.walls]) ##Here is an interesting place. Where we define the signature for the walls.
 		self.signature = tuple([self.wolf_dirs, self.carrot_dirs, self.wall_dirs])
 
 
 	def get_real_move(self, direction):
-		if sum(self.type) == 0:
+		if self.type[0] == 0 and self.type[1] == 0 and self.type[2] == 0:
 			if 1 <= direction <= 8:
 				return direction
 			elif direction == 9:

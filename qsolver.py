@@ -218,7 +218,8 @@ class QSolver:
                 story.move(current_state.get_real_move(next_move))
             else:
                 print('WARNING: no current state description in quality function')
-                exit(1)
+                next_move = random.sample(current_state.get_dirs(), 1)[0]
+                story.move(current_state.get_real_move(next_move))
         return path, qs
 
 
@@ -246,6 +247,15 @@ class Quality:
     def __init__(self):
         self.Q = dict()
         self.F = dict()
+        self.observed_states = None
+        self.observations = []
+
+    def set_observed_states(self, states):
+        """Set observed states to be tracked during learning"""
+        self.observed_states = states
+        for i in range(len(states)):
+            self.check_state(states[i])
+            self.observed.append([self.Q[states[i]]])
 
     def update_value(self,state: adventure.ZuikisState, action,ad):
         """updates += for Q(state, action) with ad"""
@@ -253,10 +263,12 @@ class Quality:
         self.Q[state][action] += ad
 
     def increase(self, state, action):
+        """Increase state visit count for state and action"""
         self.check_state(state)
         self.F[state][action] += 1
 
     def get_maxaction(self, state, nmin, rplus):
+        """Get action with highest value for state"""
         self.check_state(state)
         values = dict()
         for key in self.Q[state].keys():
@@ -271,31 +283,47 @@ class Quality:
         return random.sample(values[max_value], 1)[0]
 
     def get_maxvalue(self, state):
+        """Get max quality function value for state"""
         self.check_state(state)
         return max(self.Q[state].values())
 
     def check_state(self, state):
+        """Checks if state is in memory. If not adds empty state state"""
         if state not in self.Q:
             self.Q[state] = state.get_empty_dirs()
             self.F[state] = state.get_empty_dirs()
 
     def f(self, state, action, nmin, rplus):
-        self.check_state(state)
         """Exploration function f"""
+        self.check_state(state)
         if self.F[state][action] <= nmin:
             return rplus
         else:
             return self.Q[state][action]
 
     def alpha(self,state, action, ncut):
+        """Calculates alpha"""
         self.check_state(state)
         return ncut/(ncut - 1 + self.F[state][action])
 
     def getq(self, state, action):
+        """Get quality function value in state for action"""
         return self.Q[state][action]
 
     def getq_state(self, state):
+        """Returns quality function of state"""
         return self.Q[state]
 
     def get_quality_func(self):
+        """Returns quality function Q"""
         return self.Q
+
+    def get_state_info(self):
+        """Returns all state info in quality function for visualization inside window. The field state is fictional."""
+        qs = []
+        path = []
+        place_holder = [(0,0),[],[(7,7)]]
+        for state in self.Q.keys():
+            path.append(place_holder + [0] + [state.get_state()])
+            qs.append(self.Q[state])
+        return path, qs

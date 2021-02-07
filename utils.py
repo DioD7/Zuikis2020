@@ -47,3 +47,6 @@ class Timer():
 
     def get_total_time(self):
         return perf_counter() - self.init_time
+
+    def output(self, msg):
+        print('[{}'.format(msg),'{:.4f}'.format(self.get_time()),'s]')

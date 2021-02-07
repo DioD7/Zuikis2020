@@ -194,12 +194,12 @@ class Actions2:
 				break
 		else:
 			# Carrot
-			if self.rabbit in self.carrots and not self.wolf_encountered:
-				self.carrot_eaten = True
-				self.energy += self.carrot_gain
-				del self.carrots[self.carrots.index(self.rabbit)]
-				car, _ = generate_carrots(dims=self.dim, n_carrots=1, dist=self.carrot_gain)
-				self.carrots.append(car[0])
+			# if self.rabbit in self.carrots and not self.wolf_encountered:
+			# 	self.carrot_eaten = True
+			# 	self.energy += self.carrot_gain
+			# 	del self.carrots[self.carrots.index(self.rabbit)]
+			# 	car, _ = generate_carrots(dims=self.dim, n_carrots=1, dist=self.carrot_gain)
+			# 	self.carrots.append(car[0])
 			new_rabbit_place = (self.rabbit[0] + self.move[dir][0],self.rabbit[1] + self.move[dir][1])
 			if not 0 <= new_rabbit_place[0] < self.dim[0] or not 0 <= new_rabbit_place[1] < self.dim[1]:
 				new_rabbit_place = self.rabbit
@@ -248,6 +248,13 @@ class Actions2:
 					new_wolf_pos = (wolf[0] + delta_wolf_pos[0], wolf[1] + delta_wolf_pos[1])
 				self.wolves[index] = new_wolf_pos
 				self.wolf_dirs[index] = self.inverse_move[delta_wolf_pos]
+		# Carrot
+		if self.rabbit in self.carrots and not self.wolf_encountered:
+			self.carrot_eaten = True
+			self.energy += self.carrot_gain
+			del self.carrots[self.carrots.index(self.rabbit)]
+			car, _ = generate_carrots(dims=self.dim, n_carrots=1, dist=self.carrot_gain)
+			self.carrots.append(car[0])
 
 		return [self.rabbit, self.wolves, self.carrots, self.wolf_dirs, self.energy, self.energy <=0]
 
