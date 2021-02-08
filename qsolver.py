@@ -205,14 +205,12 @@ class QSolver:
                 next_move = self.quality.get_maxaction(current_state, self.n_min, self.r_plus)
         return paths, qs
 
-    def solve(self, field):
+    def solve(self, field, limit_turns = 500, loop_limit = 3):
         """Performs zuikis journey based on current policy"""
         self.find_policy()
         story = adventure.Story(field, record=True)
         counter = 0
-        limit_turns = 500
         history = deque() #Deque to keep history of visited states
-        loop_limit = 3 #Limit of maximum past states to recognize as looping ones
         path, qs = [], [] #Lists for keeping the path for all states.
         q = self.quality.get_quality_func()
         while not story.is_over() and counter < limit_turns:
