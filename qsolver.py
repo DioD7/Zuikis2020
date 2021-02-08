@@ -6,6 +6,7 @@ from collections import Counter
 from math import inf
 import random
 import copy
+from collections import deque
 
 ###
 #The Q solver
@@ -173,6 +174,7 @@ class QSolver:
             ##Record paths for future returning
             paths.append([])
             qs.append([])
+            last_state = None
             ##Do a single episode composed of multiple steps in a story
             for step in range(max_step):
                 counter += 1
@@ -189,9 +191,11 @@ class QSolver:
                 ##Move to new state
                 story.move(current_state.get_real_move(next_move))
                 #Change variables to new values
+                last_last_state = last_state
                 last_state = current_state
                 current_state = story.get_vision()
                 change = story.get_current_energy() - energy
+                #check if zuikis has moved back to the same state as before. If so penalize him for potentially being stuck.
                 energy = story.get_current_energy()
                 ##Calculate delta, alpha delta product and update quality of last state
                 delta = change + self.gamma * self.quality.get_maxvalue(current_state) - self.quality.getq(last_state, next_move)
@@ -206,20 +210,36 @@ class QSolver:
         self.find_policy()
         story = adventure.Story(field, record=True)
         counter = 0
-        path, qs = [], []
+        limit_turns = 500
+        history = deque() #Deque to keep history of visited states
+        loop_limit = 3 #Limit of maximum past states to recognize as looping ones
+        path, qs = [], [] #Lists for keeping the path for all states.
         q = self.quality.get_quality_func()
-        while not story.is_over() and counter < 500:
+        while not story.is_over() and counter < limit_turns:
             counter += 1
             current_state = story.get_vision()
-            if current_state in self.policy.keys():
-                path.append(story.get_state())
+            path.append(story.get_state())
+            loop = False
+            if current_state in history:
+                position_in_history = history.index(current_state)
+                if position_in_history <= loop_limit:
+                    loop = True
+            if loop:
+                next_move = random.sample(current_state.get_dirs(),1)[0]
+                if current_state in self.policy.keys():
+                    qs.append(q[current_state])
+                else:
+                    qs.append({i: -1 for i in range(8)})
+            elif current_state in self.policy.keys():
                 qs.append(q[current_state])
                 next_move = self.policy[current_state]
-                story.move(current_state.get_real_move(next_move))
             else:
+                qs.append({i:-1 for i in range(8)})
                 print('WARNING: no current state description in quality function')
                 next_move = random.sample(current_state.get_dirs(), 1)[0]
-                story.move(current_state.get_real_move(next_move))
+            story.move(current_state.get_real_move(next_move))
+            history.appendleft(current_state)
+
         return path, qs
 
 
@@ -238,8 +258,6 @@ class QSolver:
             max_value = max(values.keys())
             _policy[state] = random.sample(values[max_value],1)[0]
         self.policy = _policy
-
-#TODO try a endstate values of Q instead of change values R for carrot gains
 
 
 class Quality:

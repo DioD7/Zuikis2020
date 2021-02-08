@@ -17,15 +17,16 @@ from inspect import getmembers, isfunction
 ##
 
 
-
 def test_qsolver():
     print('Q solver testing')
     random.seed(0)
-    start1 = configurations.Field(dims=(16,16), zuikis = (2,2), vilkai=[], carrotenergy=5, carrotfactor= 0.7)
-    start2 = configurations.Field(dims=(16, 16), zuikis=(2, 14), vilkai=[], carrotenergy=5, carrotfactor=0.7)
-    start3 = configurations.Field(dims=(16, 16), zuikis=(14, 2), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
-    start4 = configurations.Field(dims=(16, 16), zuikis=(14, 14), vilkai=[], carrotenergy= 5, carrotfactor=0.7)
-    start_solve = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[], carrots=[(2, 3),(8, 1),(6,5),(5,15),(15,9),(13,14)], carrotenergy=5, carrotfactor=0.7)
+    start1 = configurations.Field(dims=(16,16), zuikis = (2,2), vilkai=[(8, 13)], carrotenergy=5, carrotfactor= 0.7)
+    start2 = configurations.Field(dims=(16, 16), zuikis=(2, 14), vilkai=[(8, 13)], carrotenergy=5, carrotfactor=0.7)
+    start3 = configurations.Field(dims=(16, 16), zuikis=(14, 2), vilkai=[(8, 13)], carrotenergy= 5, carrotfactor=0.7)
+    start4 = configurations.Field(dims=(16, 16), zuikis=(14, 14), vilkai=[(8, 13)], carrotenergy= 5, carrotfactor=0.7)
+    # start_solve = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[(8, 13)], carrots=[(2, 3),(8, 1),(6,5),(5,15),(15,9),(13,14)], carrotenergy=5, carrotfactor=0.7)
+    start_solve = configurations.Field(dims=(16, 16), zuikis=(2, 2), vilkai=[(8, 13)], carrotenergy=5, carrotfactor=0.7)
+
     solver = qsolver.QSolver(ncut = 20, nmin = 10, rplus=200, gamma=0.8)
     timer = utils.Timer()
     paths1, quality1 = solver.learn(start1, 300, 400)
@@ -33,9 +34,9 @@ def test_qsolver():
     paths3, quality3 = solver.learn(start3, 300, 400)
     paths4, quality4 = solver.learn(start4, 300, 400)
     timer.output('Learning finished in')
-    # __path, __qs = solver.solve(start_solve)
-    # timer.output('Solving finished in')
-    __path, __qs = solver.quality.get_state_info()
+    __path, __qs = solver.solve(start_solve)
+    timer.output('Solving finished in')
+    # __path, __qs = solver.quality.get_state_info()
     episode = 99
     _path = __path
     _q = __qs

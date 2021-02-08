@@ -203,6 +203,7 @@ class Actions2:
 			new_rabbit_place = (self.rabbit[0] + self.move[dir][0],self.rabbit[1] + self.move[dir][1])
 			if not 0 <= new_rabbit_place[0] < self.dim[0] or not 0 <= new_rabbit_place[1] < self.dim[1]:
 				new_rabbit_place = self.rabbit
+				# self.energy -= 30 * self.cost
 			self.rabbit = tuple(new_rabbit_place)
 		#Wolves: move, pursuit or attack: move normaly, pursuit rabbit or attack him if they are in the same space accordingly
 		#Wolfs movement second
