@@ -301,7 +301,10 @@ Teorinė fizika ir astrofizika
 
 \begin_layout Standard
 \align center
-\begin_inset VSpace 3.5cm
+\begin_inset Graphics
+	filename —Pngtree—cute bunny hugging a carrot_5325364.png
+	scale 20
+
 \end_inset
 
 
@@ -411,11 +414,15 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Section
+Programa
+\end_layout
+
+\begin_layout Subsection
 Idiegimas
 \end_layout
 
 \begin_layout Standard
-Projektas naudoja dvi išorines Python bibleotekas: tkinter ir pygame.
+Projektas naudoja tris išorines Python bibleotekas: tkinter, pillow ir pygame.
  Žiurėkite 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -431,13 +438,15 @@ noprefix "false"
  dviejų bibleotekų veikimą viename lange.
  Naujausiose pygame atnaujinimuose jis yra pašalintas, todėl naudojama truputi
  senesnė 1.9.6 versija.
+ Pillow bibleoteka naudojama lengvam paveiksleliu atvaizdavime vartotojo
+ grafinės sasajos elementuose.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Float table
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -629,8 +638,8 @@ Išorinės bibleotekos
 
 \end_layout
 
-\begin_layout Section
-Programos struktūra
+\begin_layout Subsection
+Struktūra
 \end_layout
 
 \begin_layout Standard
@@ -646,10 +655,6 @@ configurations.py
 \end_layout
 
 \begin_layout Itemize
-data.py
-\end_layout
-
-\begin_layout Itemize
 program.py
 \end_layout
 
@@ -658,15 +663,7 @@ qsolver.py
 \end_layout
 
 \begin_layout Itemize
-solvers.py
-\end_layout
-
-\begin_layout Itemize
 sprites.py
-\end_layout
-
-\begin_layout Itemize
-tests.py
 \end_layout
 
 \begin_layout Itemize
@@ -677,55 +674,238 @@ utils.py
 window.py
 \end_layout
 
+\begin_layout Itemize
+zuikis_state.py
+\end_layout
+
 \begin_layout Standard
-Ir dvieju direktorijų:
+Ir vienos direktorijos
 \end_layout
 
 \begin_layout Itemize
 pics
 \end_layout
 
-\begin_layout Itemize
-logs
+\begin_layout Standard
+Šioje direktorijoje yra saugoma paveikslėliai skirti zuikio klajonių atvaizdavim
+ui.
+ Programos failai sukirstyti į dvi dalis, pagrindinius, kurie sprendžia
+ uždavinį:configurations, adventure, qsolver, zuikis_state ir pagalbinius:
+ window, utils, sprites ir program.
+ Žiurėkite antrają lentelę.
 \end_layout
 
 \begin_layout Standard
-Pirmojoje saugomi mūsų veikėjų: zuikio, vilkio ir morkos paveikslai reikalingi
- atvaizduojant zuikio klajonę.
- Antrajame generuojami ir saugomi log failai skirti išsaugoti ir tyrinėti
- zuikio išmoktas būsenas ir jų perėjimus.
-\end_layout
-
-\begin_layout Subsection
-Paleidimas
-\end_layout
-
-\begin_layout Standard
-
-\color red
-Kolkas
-\color inherit
- pagrindinis Python failas yra 
-\color red
-tests.py
-\color inherit
-.
- Jame parašyti testai leidžia bandyti ir testuoti įvairius programos aspektus,
- įskaitant ir pati zuikio mokymais ir jo klajones.
-\end_layout
-
-\begin_layout Standard
-Paleidus šį failą pasileis viena iš dvieju rutinų: nurodytasis testas arba
- testų/profiliavimo pasirinkimas.
- Kad pasileistų pirmasis varijantas, numatytasis testas turi buti nurodytas
- leidžiant testavimo subrutiną kintamajame:
-\begin_inset listings
-inline false
+\begin_inset Float table
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="2">
+<features tabularvalignment="middle">
+<column alignment="left" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
-default_test
+\begin_layout Plain Layout
+
+\series bold
+Failo pavadinimas
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+Paskirtis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+configurations.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Konkrečių uždavinių ir pradinių sąlygų aprašymas 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+adventure.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Abstrakcios zuikio orientavimosi pasaulyje sistemos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+zuikis_state.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zuikio matymo lauko aprašymas
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+qsoler.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Uždavinio sprendiklis naudojantis kokybės(Q) funkcija
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+utils.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Pagalbinės funkcijos
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+window.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Zuikio klajonių vizualizavimo aprašymas
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+sprites.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vizualių elementų aprašymas
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+program.py
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Programos veikimo pavyzdžių leidiklis
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Programos failai ir jų paskirtis
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -734,26 +914,1095 @@ default_test
 \end_layout
 
 \begin_layout Standard
-Jei jis nenurodytas(yra None) tada pasileis testų meniu.
+Konfiguraciju faile yra pradinių sąlygų aprašymas.
+ Klasė Field pilnai aprašo viso klajonių lauko būsena klajonės pradžioje.
+ Joje apsirašo pradinė zuikio vieta, vilkų vietos ir morkų vietos.
+ Taip pat kiek naudingos morkos ir faile aprašyta jų generavimo įpatumai
+ tikimybiniu požiuriu.
 \end_layout
 
 \begin_layout Standard
-
-\color red
-Šiuo laiko momentu dalis testų tikriausia neveikia ir keli tikrai neveikia.
- Tačiau tikrai veikia paskutinis testas:
+Nuotykių faile yra aprašyta klajonių sistemos dinamika.
+ Action klasėje, arba jos įpėdinyje Action2 klasėje yra aprašytas sistemos
+ atsakas į zuiki ir pačios sistemos evoliucija zuikiui bandant keliauti.
+ Metodas interactions atlieka pagrindinį vaidmenį.
+ Jis prijima visa sistemos būsena ir norima zuikio judejimo krypti.
+ Atlieka sistemos dinamika ir gražina pasikeituses vertes.
+ Šių klasių objektai taip, pat įsimena paskutinias zuikio būsenas ir jas
+ gražina kai yra pakviečiamas rabbit_vision metodas.
+ Faile taip pat yra story klasė skirta atvaizduoti vienam episodui arba
+ vienai zuikio kelioniai.
 \end_layout
 
 \begin_layout Standard
+Zuikio būsenų faile yra aprašomos zuikio būsenos.
+ Zuikis mato aplink save keturių Manhattan vienetų atstumu.
+ Jo matymo laukas yra sudedamas į šios klasės objektus ir tada šifruojamas(hashi
+ng) patogiam naudojimui.
+ Šie objektai taip pat turi galimybe bendrauti su sprendikliu ir jam perduoti
+ reikalinga, papildoma informaciją reikalinga sprendimo metu.
+\end_layout
 
-\color red
-\begin_inset listings
-inline false
-status open
+\begin_layout Standard
+Sprenklio failas sudarytas iš Q funkcijos sprendklio klasės.
+ Šios klasės objektai sprendžia zuikio klajonių uždavinį.
+ Naudodami juos galime išmokyti kokybės Q funkciją ir jos pagalba atlikti
+ vizualizuotiną zuikio kelionę.
+\end_layout
+
+\begin_layout Standard
+Pagalbinių funkcijų faile yra laiko sekimo funkcijos.
+ Pagrindiniama programos faile yra leidiklis skirtas paleisti įvairius programos
+ veikimo pavyzdžius.
+\end_layout
+
+\begin_layout Standard
+Lango faile yra programos dalis skirta vizualizuoti zuikio klajones grafiškai
+ naudojantis klajonių kelio aprašymu.
+ Atvaizdavimas naudoja visualius elementus aprašytus sprites.py faile.
+\end_layout
+
+\begin_layout Subsection
+Paleidimas
+\end_layout
+
+\begin_layout Standard
+Pgrindinis Python failas yra program.py.
+ Ji paleidus automatiškai pasileidžia leidiklio objektas kuris apmoko kokybės
+ funkcija Q ir paleidžia parinktus pavyzdžius.
+ Pagrindiniai nustatymai gali būti keičiami ir randasi leidiklio konstruktoriuje.
+ Funkcijos mokymas yra aprašomas learn metode.
+ Metode launch yra aprašomas pavyzdžių sprendimas ir grafinis atvaizdavimas.
+\end_layout
+
+\begin_layout Standard
+Norint atvaizduoti kaskoki specifinį atveji užtenka pasirinkti viena iš
+ esamų arba susikurti savo pradinių sąlygų(configurations.Field(...) konfiguracija
+ ir paleisti su ją launch_example metodu.
+ Paleidus programa, ji pradės mokytis ir po kažkurio laiko (~30s) pradės
+ rodyti zuikio klajonių grafinę sąsają.
+ Sąsajoje galima matyti: viso klajonių lauko atvaizdavimą, zuikio būsenos
+ atvaizdavimą, visu pavyzdžio, sprendimo ėjimų skaičių, dabartinį ėjimo
+ numerį, dabartinę energiją, būsęnos parinkimo slankiklį, grojįmo mygtuką,
+ grojimo greičio slankiklį, zuikio būsenos aprašyma ir galiausia ėjimo į
+ priekį ar atgal mygtukus.
+ Paspaudus ėjimo į priekį migtuką būsena pasikeis į sekančiają zuikio klajonėje.
+ Būsena atvaizduojama visame lauke ir konkrečioje zuikio būsenoje.
+ Klajonių lauko sienas, zuiki, vilkus ir morkas vaizduoja tam tikros ikonos
+ arba spalvos.
+ Norint paleisti automatini kelionės grojimą užtenka paspausti grojimo mygtuką.
+ Grojimo greiti galima kontroliuoti su tam skirtu slankikliu.
+\end_layout
+
+\begin_layout Standard
+Norint pažiurėti į konkrečias išmoktas kokybės funkcijos būsenas užtenka
+ paleisti launch_q metoda.
+ Atsivers įdentiškas langas rodantis bendrają ir konkrečiaja zuikio būsenas.
+ Šykarta bendroji lauko būsena nesikeičianti ir fyktivi, tačiau galima keisti
+ zuikio būsena ir pamatyti šalia esantį kokybės funkcijos aprašą.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Veikimas
+\end_layout
+
+\begin_layout Standard
+Aprašome kaip veikia tam tikri programos elementai.
+\end_layout
+
+\begin_layout Subsection
+Pasaulis
+\end_layout
+
+\begin_layout Standard
+Pasaulis kiekvienu momentu yra aprašomas visų elementų: zuikio, vilko, morkų
+ vietomis, vilkų kryptimis ir zuikio energija.
+ Pradinės šių verčių reikšmės yra užrašomos Fields klasėje, tada naudojantis
+ Story klase pasaulio būsena yra keičiama iki kol nepasibaigia zuikio energija.
+ Pati story klasė tik seka dabartines pasaulio koordinates ir naudojasi
+ Actions2 klase atlikti bet kokius judėjimus šiame pasaulyje.
+ Actions2 klasė turi metoda interactions kuriam perdavus visas koordinates
+ ir norima zuikio judejimo krypti jis atlieka visus reikiamus veiksmus ir
+ santykių detekcijas.
+\end_layout
+
+\begin_layout Standard
+Kryptis programoje užsirašo aštuoniais skaičiais 
+\begin_inset Formula $1,2,3,4,5,6,7,8$
+\end_inset
+
+ žiurėti lent 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Krypčių-atvaizdavimas-programoje"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Šiaurė yra 
+\begin_inset Formula $2$
+\end_inset
+
+, pietus 
+\begin_inset Formula $6$
+\end_inset
+
+ ir t.t.
+ Kadangi grafikos lange ordinatė yra apversta, todėl apsiverčia ir kryptys.
+ Žiurėkite lent.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Krypčių-atvaizdavimas-grafikos"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Z
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Krypčių-atvaizdavimas-programoje"
+
+\end_inset
+
+Krypčių atvaizdavimas programoje
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \begin_layout Plain Layout
 
-test_qsolver
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Z
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Krypčių-atvaizdavimas-grafikos"
+
+\end_inset
+
+Krypčių atvaizdavimas grafikos lange
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Saveikavimo metode pirmiausia tikrinama ar vilkas ir zuikis yra vienoje
+ vietoje.
+ Jei taip, tada zuikis praranda energijos ir pajuda centro link.
+ Jei ne, bandoma judėti nurodyta kryptimi, nepasisekant tik tada jei judama
+ į sieną.
+ Po šių veiksmų atliekami lauko vilkų veiksmai.
+ Pirmiausia visi vilkai patikrina ar jie mato zuiki.
+ Patikrinimas vyksta apskaičiuojant zuikio Manhattan atstuma iki vilko ir
+ jo reletyvų vektorių.
+ Atliekamas skaliarinis produktas šio vektoriaus su vilko krypties vektoriumi
+ ir jei jis yra 
+\begin_inset Formula $\geq0$
+\end_inset
+
+ ir atstumas yra atitinkamas tada skaitoma, kad vilkas mato zuiki.
+ Jei vilkas mato, tada bando judeti lygiai per 2 langelius jo link.Judėjimo
+ kryptis nustatoma pagal artimiausia krypti zuikiui naudojant atan2 metodą.
+ Jei ne juda normaliai.
+ Jei atsimuša į siena pasikeičia jo kryptis.
+\end_layout
+
+\begin_layout Standard
+Galiausia jei zuikis atsidurė ant morkos jis ją suvalgo.
+ Jo energija padidėja nustatyta reikšme ir morka yra sunaikinama ir padedama
+ kažkur kitur.
+ Morkos generuojamos atsitiktinai pagal tolygini pasiskirstymą.
+ Svarbiausias parametras generuojant morkas yra jų skaičius kuris nustatomas
+ pagal lauko ploti ir morkos energija:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+n_{morkos}=round\left(\frac{d^{2}}{\pi r^{2}M^{2}}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Kur 
+\begin_inset Formula $r$
+\end_inset
+
+ skaičius mažesnis už 1.
+ 
+\end_layout
+
+\begin_layout Subsection
+Zuikio būsenos
+\end_layout
+
+\begin_layout Standard
+Zuikio būsenos yra skaidomos į tris tipus: kai jis nieko nemato, kai jis
+ mato tik morkas ir kai mato/nemato morku ir mato vilkus ir/arba sienas.
+ Pirmuoju atveju pridedama devintoji 
+\begin_inset Formula $9$
+\end_inset
+
+ kryptis kuri atitinka atsitiktinį ėjimą į betkuria iš aštuonių krypčių.
+ Antruojų atvejų kryptys yra visiškai pakeičiamos į kelias kryptis kurių
+ skaičius atitinka morkų skaičių.
+ Šios kryptis, pradedant nuo 
+\begin_inset Formula $0$
+\end_inset
+
+ atitinka kryptis iki arčiausios morkos.
+ Tada pirmoji 
+\begin_inset Formula $0$
+\end_inset
+
+ kryptis reiškia ėjima link arčiausios, antrojo 
+\begin_inset Formula $1$
+\end_inset
+
+ link antros arčiausios ir taip toliau.
+\end_layout
+
+\begin_layout Standard
+Kadangi zuikiui yra svarbus atstumas iki vilkų arba sienų, jei jis mato
+ nors viena iš šių jo kryptis nepasikeičia.
+\end_layout
+
+\begin_layout Standard
+Zuikio būsenos yra šifruojamos, siekiant jas lengvai atpažinti ir saugoti
+ naudojant python dict() tipa ir siekiant sumažinti galimų būsenų skaičių.
+ Pirmoji būsena yra šifruojama savo tipu t.y.
+ kad zuikis mato nulį visų išorės elementų.
+ Antroji šifruojama morkų krypčių ir atstumu iki jų aibe, be pasikartojimų.
+ Trečiasis tipas irgi saugomas krypčių ir atstumu iki elementų unikalia
+ aibe.
+ Tokiu budu šifruojant dauk būsenų atitinka tą patį šifrą.
+ Tačiau su kiekviena būsena sprendiklis dirba tik vienu laiko momentu, todėl
+ jis kreipiasi į pačia būsena, kad gautu jam reikama informaciją.
+ Pavyzdžiui kuri kryptis ištikro yra arčiausios morkos kryptis.
+ Ši informacija yra saugoma pačios būsenos aprašyme.
+\end_layout
+
+\begin_layout Subsection
+Mokymasis
+\end_layout
+
+\begin_layout Standard
+Sprendiklis naudoja kokybės funkcijos Q metoda išmokti strategijai.
+ Kokybės funkcija yra būsenos 
+\begin_inset Formula $s$
+\end_inset
+
+ ir veiksmo 
+\begin_inset Formula $a$
+\end_inset
+
+ porų rinkinys 
+\begin_inset Formula $Q\left(s,a\right)$
+\end_inset
+
+ kiekvienai būsenai 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ Tuomet strategija 
+\begin_inset Formula $\pi$
+\end_inset
+
+ kiekvienai busenai yra:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\pi\left(s\right)=\arg\max_{a}Q\left(s,a\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pradžioje kokybės funkcija Q inicijuojama į nulius, priklausomai kokios
+ kryptis priklauso tyrinėjamai būsenai.
+ Kiekviename episode vyksta perjimas iš vienos būsenos 
+\begin_inset Formula $s$
+\end_inset
+
+ į sekančiaja būseną 
+\begin_inset Formula $s^{\prime}$
+\end_inset
+
+ naudojant veiksmą 
+\begin_inset Formula $a$
+\end_inset
+
+.
+ Kiekvieno perėjimo metu kokybės funkcija pakeičiama pagal sąryšį:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q\left(s,a\right)=Q\left(s,a\right)+\alpha\left(N\left(s,a\right)\right)\left(R+\gamma\arg\max_{a^{\prime}}Q\left(s^{\prime},a^{\prime}\right)-Q\left(s,a\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Čia 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ yra mokymosi sparta, 
+\begin_inset Formula $N\left(s,a\right)$
+\end_inset
+
+ yra apsilankymu saičius, 
+\begin_inset Formula $R$
+\end_inset
+
+ vertės pokytis einant išvienos būsenos į kita ir 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ skaičius.
+ Agentas taip keičia būsenas tam tikra skaičių ėjimų.
+ Šis skaičius gali būti skaičius iki klajonės pabaigos(kai pasibaigia zuikio
+ energija) arba nustatytas maksimumas.
+ Tokia, viena kelionė vadinama episodu.
+ Agentas mokosi kokybės funkcijos Q per dauk episodų.
+ Galiausia vilimasi, kad vertės kiekvienoje būsenos ir veiksmo poroje nusistovės
+ tam tikroje vertėje.
+ Tą užtikrina mokymosi spartos pastovus gesimas:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\alpha\left(N\left(s,a\right)\right)=\frac{N_{cut}}{N_{cut}-1+N\left(s,a\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+kur 
+\begin_inset Formula $N_{cut}$
+\end_inset
+
+ yra išorinis parametras.
+ 
+\end_layout
+
+\begin_layout Standard
+Sekančios būsenos yra pasirenkamos naudojant tyrinėjimo išnaudojimo strategija
+ nulemta kiekvienos būsenos veiksmo aplankymo skaičiaus.
+ Naudojama tyrinėjimo funkcija:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f\left(Q\left(s,a\right),N\left(s,a\right)\right)=\begin{cases}
+R_{+} & N\left(s,a\right)\leq N_{min}\\
+Q\left(s,a\right) & N\left(s,a\right)>N_{min}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+čia 
+\begin_inset Formula $R_{+}$
+\end_inset
+
+ir 
+\begin_inset Formula $N_{min}$
+\end_inset
+
+ yra išoriniai parametrai.
+ Ši funkcija naudojama nustatyti sekančius veiksmus leidžia ištyrinėti beveik
+ visas būsenas.
+\end_layout
+
+\begin_layout Subsection
+Sprendimas
+\end_layout
+
+\begin_layout Standard
+Sprendikliui išmokus kokybės Q funkcija jis iš jos nusistato strategiją
+ ir iš jos gali bandyti spresti pavyzdžius.
+ Sprendimas vyksta naudojantis strategija ir Story klase, labai panašiai
+ kaip vyko mokymo metu.
+ Tik dabar Q funkcija nebėra mokomasi ir tik naudojama rasta strategija
+ 
+\begin_inset Quotes gld
+\end_inset
+
+stumdyti
+\begin_inset Quotes grd
+\end_inset
+
+ zuiki lauke kol nepasibaiks jo klajonė.
+ Kartais vedant zuiki jis nueina į tokia būsena kurios nėra Q funkcijos
+ ir tuo labiau strategijos aprašyme.
+ Tokiu atveju zuikis atlieka atsitiktinį ėjimą į betkuria kryptį savo būsenoje.
+\end_layout
+
+\begin_layout Standard
+Kitais atvejais zuikis labai mėgsta įstrigti į uždarus ciklus eidamas į
+ siena arba keliaudamas pastoviai per tuos pačius kelis langelius.
+ Tokiu atveju yra sekamos zuikio praeitos būsenos ir tikrinama ar jis neperėjo
+ per ta pačia būsena visai nesenai.
+ Jei perėjo jis vėl atlieka atsitiktini ėjimą.
+ Taip zuikis keliauja pusiau atsitiktinai, bet kai pamato morka jo strategija
+ 
+\begin_inset Quotes gld
+\end_inset
+
+atgyja
+\begin_inset Quotes grd
+\end_inset
+
+ ir leidžia jam jas susirinkti.
+\end_layout
+
+\begin_layout Section
+Rezultatai
+\end_layout
+
+\begin_layout Standard
+Programoje yra keli pagrindiniai parametrai:
+\end_layout
+
+\begin_layout Itemize
+max_iter - maksimalus iteracijus/episodu skaičius
+\end_layout
+
+\begin_layout Itemize
+max_step - maksimalus žyngsnių skaičius episode
+\end_layout
+
+\begin_layout Itemize
+n_cut - 
+\begin_inset Formula $N_{cut}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+n_min - 
+\begin_inset Formula $N_{min}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+r_plus - 
+\begin_inset Formula $R_{+}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+gamma - 
+\begin_inset Formula $\gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mes pasirinkome max_iter = 400 ir max_step = 500.
+ Parametra n_min pasirinkome 10.
+ Mokome sprendiklį išviso 4 kartus su tuo pačiu lauku, tik pasukti kiekviena
+ karta po 
+\begin_inset Formula $90^{\textdegree}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+neskaitant vilko.
+\end_layout
+
+\begin_layout Standard
+Pirmiausia pabandėme nustatyti 
+\begin_inset Formula $N_{cut}$
+\end_inset
+
+ verte, kaitaliodami parametrus.
+ Žiurėti pav.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:sąryšis-mokymosi-naudingumu"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Kaip matosi iš eksperimentų geriausia naudoti vertes 
+\begin_inset Formula $N_{cut}=5$
+\end_inset
+
+ arba 
+\begin_inset Formula $N_{cut}=40$
+\end_inset
+
+.Mes pasirinkome pirmajį varijantą 
+\begin_inset Formula $N_{cut}=5$
+\end_inset
+
+.
+ Ateities spėjimo parametras 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ yra svarbus nes nuo jo stipriai priklauso mokymosi rezultatai.
+ Jį pakaitaliojome ir gavome geriausia vertę 
+\begin_inset Formula $\gamma=0.8$
+\end_inset
+
+.
+ Žiurėti pav.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:-sąryšis-mokymosi"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:sąryšis-mokymosi-naudingumu"
+
+\end_inset
+
+
+\begin_inset Formula $N_{cut}$
+\end_inset
+
+ sąryšis mokymosi naudingumu 
+\begin_inset Formula $\frac{N_{path}^{\prime}}{N_{path}}$
+\end_inset
+
+.Vertės yra kelių vidurkiai su 
+\begin_inset Formula $n=50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Figure_1 ncut.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $\gamma$
+\end_inset
+
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:-sąryšis-mokymosi"
+
+\end_inset
+
+ sąryšis mokymosi naudingumu 
+\begin_inset Formula $\frac{N_{path}^{\prime}}{N_{path}}$
+\end_inset
+
+.Vertės yra kelių vidurkiai su 
+\begin_inset Formula $n=50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Figure_2 gamma.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pabandėme patikrinti priklausomybę nuo lauko dimensijos 
+\begin_inset Formula $d$
+\end_inset
+
+, žiurėti pav.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig dimensija"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Kaip matome, naudingumas mažėja su lauko dydžiu.
+ Tai galima paaiškinti tuom, kad besielgdamas atsitiktinai didele dali laiko
+ gali savo matymo lauke aptikti daugiau morku mažesniuose laukuose.
+ Kadangi atsitiktinio ėjimo vidurkis yra 0 jam sunku yra nueiti didesnius
+ atstumus atsitiktinai.
+\end_layout
+
+\begin_layout Standard
+Galiausa patikrinome parametra M, žiurėti pav.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:M"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ Matome, kad naudingumas yra ganėtinai įvairus.
+ Bet daugiausiai naudos duoda mažesnės vertės.
+ Taip yra dėl to, kad nuo parametro M priklauso morkų skaičius.
+ Kuo jis didesnis tuo morku mažiau(pagal uždavinio sąlygą).
+ Kadangi, vėl, zuikiui judant didelius plotus atsitiktinai yra sunku jis
+ negali ieskoti kelių morkų per visa lauką efektyviai.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $d$
+\end_inset
+
+ sąryšis mokymosi 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig dimensija"
+
+\end_inset
+
+naudingumu 
+\begin_inset Formula $\frac{N_{path}^{\prime}}{N_{path}}$
+\end_inset
+
+.Vertės yra kelių vidurkiai su 
+\begin_inset Formula $n=50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Figure_3 dimension.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $M$
+\end_inset
+
+ sąryšis
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:M"
+
+\end_inset
+
+ mokymosi naudingumu 
+\begin_inset Formula $\frac{N_{path}^{\prime}}{N_{path}}$
+\end_inset
+
+.Vertės yra kelių vidurkiai su 
+\begin_inset Formula $n=50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Figure_4 M.png
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -766,6 +2015,37 @@ test_qsolver
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Išvados
+\end_layout
+
+\begin_layout Itemize
+Dalinai atsitiktinai vaikščiojančiam zuikiui geriausia yra mažesnis klajojimo
+ laukas ir mažesnės M vertės.
+ Patobulinus atsitiktinį elementą į geresnį būtų galima pataisyti šį tašką.
+\end_layout
+
+\begin_layout Itemize
+Efektyviam mokymuisi reikia gerai nustatyti hyper parametrus kaip 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ ar 
+\begin_inset Formula $N_{cut}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Esant laiko dimensijai 
+\begin_inset Formula $d=16$
+\end_inset
+
+ vienu vilku zuikis susidoroja pakankamai efektyviai, su dviems truputi
+ prasčiau ir su daugiau jo efektyvumas krenta labai stipriai.
 \end_layout
 
 \end_body

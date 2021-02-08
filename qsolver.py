@@ -233,7 +233,7 @@ class QSolver:
                 next_move = self.policy[current_state]
             else:
                 qs.append({i:-1 for i in range(8)})
-                print('WARNING: no current state description in quality function')
+                # print('WARNING: no current state description in quality function')
                 next_move = random.sample(current_state.get_dirs(), 1)[0]
             story.move(current_state.get_real_move(next_move))
             history.appendleft(current_state)

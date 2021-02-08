@@ -17,9 +17,9 @@ class Launcher:
         ##Setttings
         ######
         #General
-        self.max_iter = 300 #Max episodes per learning cycle
+        self.max_iter = 400 #Max episodes per learning cycle
         self.max_step = 500 #Max steps per episode
-        self.n_cut = 20     #Alpha cut value N_c
+        self.n_cut = 5     #Alpha cut value N_c
         self.n_min = 10     #Exploration N_min value
         self.r_plus = 200   #Exploration R_+ value
         self.gamma = 0.8    #Q learning gamma value
@@ -65,14 +65,21 @@ class Launcher:
         # custom_example = configurations.Field(dims=(16, 16),zuikis=(0,0), vilkai=[(14,15)], carrots=[(13,13)], carrotfactor=0.7, carrotenergy=9)
         # self.launch_example(custom_example, showq=False)
         self.launch_example(self.example_fields[0], showq=False)
-        self.launch_example(self.example_fields[1], showq=False)
-        self.launch_example(self.example_fields[2], showq=False)
+
+        # self.launch_example(self.example_fields[1], showq=False)
+        # self.launch_example(self.example_fields[2], showq=False)
+
+        # self.launch_q()
+
         ######
 
     def launch_example(self, example, showq = False):
         _path, _qs = self.solver.solve(example, loop_limit=self.loop_limit, limit_turns=self.turn_limit)
         window.Window(dim=example.get_dims(), path=_path, showQ=showq, q=_qs)
 
+    def launch_q(self):
+        __path, __qs = self.solver.quality.get_state_info()
+        window.Window(dim=(16,16), path=__path, showQ=True, q=__qs)
 
 if __name__ == "__main__":
     Launcher()
